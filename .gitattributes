@@ -1,0 +1,5 @@
+# Shell scripts, git hooks and Node scripts must keep LF endings on Windows checkouts
+# (core.autocrlf=true would otherwise break them in Git Bash).
+*.sh text eol=lf
+*.mjs text eol=lf
+.githooks/* text eol=lf

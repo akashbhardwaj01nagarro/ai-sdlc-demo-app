@@ -54,10 +54,28 @@ Who may approve depends on the approver's role and the invoice amount. Limits ar
 
 ## Commands
 
+- Windows without a system .NET SDK: start each shell with `source scripts/dev-env.sh` (Git Bash) or `. .\scripts\dev-env.ps1` (PowerShell) to put the user-local SDK in `~/.dotnet` first on PATH.
 - Run the app: `dotnet run --project backend/src/InvoiceApp.Api` then open http://localhost:5000
 - Build: `dotnet build backend/InvoiceApp.sln`
 - Run the tests: `dotnet test backend/InvoiceApp.sln`; one rule only: `dotnet test backend/InvoiceApp.sln --filter Rule=FR-004`
 - Run end-to-end tests: `cd e2e && npm install && npx playwright install chromium && npm test`
+- Test the hooks and log scripts: `node --test ".claude/hooks/tests/*.test.mjs" ".githooks/tests/*.test.mjs" "scripts/ai-log/tests/*.test.mjs"`
+
+## AI workflow
+
+- Hand an agent one scoped step at a time (one user story, one finding), never a whole feature in one prompt.
+- Subagents in `.claude/agents/`:
+  - test-author writes tests, and domain-implementer writes production code.
+  - test-critic reviews tests, and e2e-author writes Playwright tests.
+  - mutation-analyst triages Stryker survivors.
+  - pr-reviewer reviews a pull request through review-rules, review-tests and review-security.
+  - log-auditor checks the AI log for secrets.
+
+  The reviewing agents end with a JSON report that a hook validates.
+- Skills in `.claude/skills/`: approval-rules, verify-change, mutation-testing, e2e-playwright, pr-review, commit-conventions, ai-interaction-log.
+- Hooks in `.claude/settings.json` log every prompt, tool call, subagent run and final answer to `ai-logs/ai-interactions.jsonl`, one JSON line per event in a single schema, with secrets redacted. Never edit the log by hand. Regenerate the readable `ai-logs/AI-INTERACTIONS.md` with `node scripts/ai-log/render-log.mjs`.
+- Commit messages read `type(scope): what changed`, followed by a `What:` paragraph and a `Why:` paragraph. `.githooks/commit-msg` enforces this once `git config core.hooksPath .githooks` is set.
+- Work happens on the fork. Push only to `origin`, and open pull requests and issues with `--repo <fork>`. A hook blocks anything aimed at the upstream workshop repository.
 
 ## Review expectations
 
