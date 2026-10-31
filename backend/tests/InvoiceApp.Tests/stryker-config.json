@@ -1,0 +1,10 @@
+{
+  "stryker-config": {
+    "project": "InvoiceApp.Domain.csproj",
+    "mutation-level": "Standard",
+    "coverage-analysis": "perTest",
+    "reporters": ["progress", "cleartext", "markdown", "html", "json"],
+    "thresholds": { "high": 80, "low": 60, "break": 0 },
+    "concurrency": 4
+  }
+}

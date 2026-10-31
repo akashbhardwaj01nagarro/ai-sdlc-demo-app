@@ -59,6 +59,7 @@ Who may approve depends on the approver's role and the invoice amount. Limits ar
 - Build: `dotnet build backend/InvoiceApp.sln`
 - Run the tests: `dotnet test backend/InvoiceApp.sln`; one rule only: `dotnet test backend/InvoiceApp.sln --filter Rule=FR-004`
 - Run end-to-end tests: `cd e2e && npm install && npx playwright install chromium && npm test`
+- Mutation testing: `dotnet tool restore`, then from `backend/tests/InvoiceApp.Tests` run `dotnet stryker -m "**/Approv*.cs"` (approval code) or `dotnet stryker` (whole Domain project). Stryker.NET is pinned to 4.13.0 because newer releases need a later .NET runtime; the global equivalent is `dotnet tool install -g dotnet-stryker --version 4.13.0`. Recorded scores are in `docs/mutation/`.
 - Test the hooks and log scripts: `node --test ".claude/hooks/tests/*.test.mjs" ".githooks/tests/*.test.mjs" "scripts/ai-log/tests/*.test.mjs"`
 
 ## AI workflow
