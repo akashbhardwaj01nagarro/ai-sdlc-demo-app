@@ -1,0 +1,130 @@
+{
+  "duration_api_ms": 11361,
+  "stop_reason": "end_turn",
+  "session_id": "8d099a69-4a36-4428-b6f9-96af2918d907",
+  "total_cost_usd": 0.0014686299999999998,
+  "usage": {
+    "input_tokens": 2,
+    "cache_creation_input_tokens": 4796,
+    "cache_read_input_tokens": 4623,
+    "output_tokens": 660,
+    "output_tokens_details": {
+      "thinking_tokens": 435
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 4796,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "global",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 660,
+        "cache_read_input_tokens": 4623,
+        "cache_creation_input_tokens": 4796,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 4796
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "modelUsage": {
+    "claude-haiku-5-5": {
+      "inputTokens": 1237,
+      "outputTokens": 679,
+      "cacheReadInputTokens": 4623,
+      "cacheCreationInputTokens": 4796,
+      "webSearchRequests": 0,
+      "costUSD": 0.0014686299999999998,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 435,
+      "canonicalModel": "claude-haiku-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "unknown",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "safety_stops": 0,
+  "is_error": false,
+  "num_turns": 1,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "**No.** FR-003 requires two different users for an invoice above 500,000.00: the first approver must be a Manager or Director, and the second must be a Director. FR-004 says the same user never counts as both approvers on one invoice, including through repeat clicks and concurrent requests, so the read, decide and write must happen as one step.\n\n\"The same person\" is decided by the signed-in username from the session, not from a request body. The names are compared trimmed and case-insensitively, so `\" Alice \"` and `\"alice\"` count as the same user.\n\nI answered from `AGENTS.md`, which was already in context. I did not open `specs/001-approval-limits/` or the code, so the implementation may differ from the rule.",
+  "ttft_ms": 5693,
+  "type": "result",
+  "duration_ms": 5899,
+  "uuid": "2486fd45-0627-48f7-b44f-cc80478456ea",
+  "ttft_stream_ms": 5678,
+  "time_to_request_ms": 240,
+  "time_to_request_phases_ms": {
+    "other": 20,
+    "system_prompt": 46,
+    "resume_other": 0,
+    "process_user_input": 3,
+    "input_attachments": 13,
+    "input_hooks": 8,
+    "tool_pool_refresh": 3,
+    "init_message": 26,
+    "engine_pickup": 2,
+    "message_prep": 1,
+    "model_config_wait": 2,
+    "autocompact": 2,
+    "query_setup": 1,
+    "model_gates": 1,
+    "tool_schema_build": 11,
+    "message_normalization": 1,
+    "client_creation": 94,
+    "request_build": 6
+  },
+  "turn_start_resume_kind": "none",
+  "process_turn_index": 0,
+  "time_to_request_loop_lag_ms": 190,
+  "time_to_request_cpu_ms": 392,
+  "time_to_request_major_faults": 6259,
+  "input_attachments_detail": {
+    "slowest_producer": "queued_commands",
+    "slowest_producer_ms": 9,
+    "cpu_ms": 16,
+    "major_faults": 242
+  },
+  "first_content_frame_ms": 5683,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

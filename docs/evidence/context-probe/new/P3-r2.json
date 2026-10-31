@@ -1,0 +1,130 @@
+{
+  "duration_api_ms": 7743,
+  "stop_reason": "end_turn",
+  "session_id": "fb5ab860-ebf0-410d-aa9b-af32dfa129fc",
+  "total_cost_usd": 0.00054499,
+  "usage": {
+    "input_tokens": 2,
+    "cache_creation_input_tokens": 724,
+    "cache_read_input_tokens": 8699,
+    "output_tokens": 359,
+    "output_tokens_details": {
+      "thinking_tokens": 147
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 724,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "global",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 359,
+        "cache_read_input_tokens": 8699,
+        "cache_creation_input_tokens": 724,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 724
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "modelUsage": {
+    "claude-haiku-5-5": {
+      "inputTokens": 1237,
+      "outputTokens": 379,
+      "cacheReadInputTokens": 8699,
+      "cacheCreationInputTokens": 724,
+      "webSearchRequests": 0,
+      "costUSD": 0.00054499,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 147,
+      "canonicalModel": "claude-haiku-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "extra_usage_disabled",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "safety_stops": 0,
+  "is_error": false,
+  "num_turns": 1,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "A refused approval must change nothing. Every invoice field keeps its value, and the repository's `Update` is not called. The refusal does not count as a rejection, so the invoice never gets `Rejected`. The refusal reason must name the rule, role, limit and invoice. The API returns 403 with `{ error, code }`, and the web UI shows the server's `error` text.\n\nRules are checked first and the write happens only after they all pass, because the repository hands out live objects and a field written before a refusal would leave the store changed even without `Update`.\n\nSource: `AGENTS.md`, \"Approval rules\" (FR-005), \"Layering\", and \"Never\" sections.",
+  "ttft_ms": 7130,
+  "type": "result",
+  "duration_ms": 8050,
+  "uuid": "e951c8e3-3b7b-406b-a708-1645469b72e6",
+  "ttft_stream_ms": 6702,
+  "time_to_request_ms": 5981,
+  "time_to_request_phases_ms": {
+    "other": 5803,
+    "system_prompt": 66,
+    "resume_other": 1,
+    "process_user_input": 2,
+    "input_attachments": 11,
+    "input_hooks": 4,
+    "tool_pool_refresh": 1,
+    "init_message": 40,
+    "engine_pickup": 2,
+    "message_prep": 1,
+    "model_config_wait": 3,
+    "autocompact": 3,
+    "query_setup": 1,
+    "model_gates": 1,
+    "tool_schema_build": 14,
+    "message_normalization": 5,
+    "client_creation": 6,
+    "request_build": 17
+  },
+  "turn_start_resume_kind": "none",
+  "process_turn_index": 0,
+  "time_to_request_loop_lag_ms": 5238,
+  "time_to_request_cpu_ms": 5140,
+  "time_to_request_major_faults": 9882,
+  "input_attachments_detail": {
+    "slowest_producer": "queued_commands",
+    "slowest_producer_ms": 4,
+    "cpu_ms": 32,
+    "major_faults": 230
+  },
+  "first_content_frame_ms": 6702,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

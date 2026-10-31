@@ -1,0 +1,130 @@
+{
+  "duration_api_ms": 11387,
+  "stop_reason": "end_turn",
+  "session_id": "c25ffb27-f661-497a-9527-d7538b490bec",
+  "total_cost_usd": 0.00120055,
+  "usage": {
+    "input_tokens": 4,
+    "cache_creation_input_tokens": 2238,
+    "cache_read_input_tokens": 13325,
+    "output_tokens": 975,
+    "output_tokens_details": {
+      "thinking_tokens": 333
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 2238,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "global",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 505,
+        "cache_read_input_tokens": 7022,
+        "cache_creation_input_tokens": 1519,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 1519
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "modelUsage": {
+    "claude-haiku-5-5": {
+      "inputTokens": 1222,
+      "outputTokens": 995,
+      "cacheReadInputTokens": 13325,
+      "cacheCreationInputTokens": 2238,
+      "webSearchRequests": 0,
+      "costUSD": 0.00120055,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 333,
+      "canonicalModel": "claude-haiku-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "network_error",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "safety_stops": 0,
+  "is_error": false,
+  "num_turns": 3,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "I found no \"Manager\" role and no approval limit anywhere in the repository, so I can't list tests for it.\n\n- A case-insensitive search for `manager`, `limit`, and `approval limit` across the repo matched only one line: `docs/use-cases/UC-1-bulk-approval.md:27`, which asks \"Is there a limit on batch size?\" That is an open question about bulk approval, not a specification.\n- The roles in `AGENTS.md` are Approver and Admin. `ApprovalService.cs` and `DiscountCalculator.cs` contain no amount threshold.\n\nIf this feature is planned, the brief would need to define the limit (for example, a maximum invoice amount per approver) and whether Managers are a new role. I can draft the test list from that brief once it exists.",
+  "ttft_ms": 7203,
+  "type": "result",
+  "duration_ms": 17785,
+  "uuid": "c5e7a7c5-6676-4585-beba-de80f5a25ccd",
+  "ttft_stream_ms": 1778,
+  "time_to_request_ms": 891,
+  "time_to_request_phases_ms": {
+    "other": 108,
+    "system_prompt": 99,
+    "resume_other": 0,
+    "process_user_input": 24,
+    "input_attachments": 68,
+    "input_hooks": 28,
+    "tool_pool_refresh": 21,
+    "init_message": 148,
+    "engine_pickup": 8,
+    "message_prep": 7,
+    "model_config_wait": 5,
+    "autocompact": 11,
+    "query_setup": 4,
+    "model_gates": 9,
+    "tool_schema_build": 69,
+    "message_normalization": 8,
+    "client_creation": 245,
+    "request_build": 29
+  },
+  "turn_start_resume_kind": "none",
+  "process_turn_index": 0,
+  "time_to_request_loop_lag_ms": 841,
+  "time_to_request_cpu_ms": 734,
+  "time_to_request_major_faults": 6879,
+  "input_attachments_detail": {
+    "slowest_producer": "queued_commands",
+    "slowest_producer_ms": 38,
+    "cpu_ms": 32,
+    "major_faults": 268
+  },
+  "first_content_frame_ms": 1783,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

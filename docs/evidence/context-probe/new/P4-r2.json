@@ -1,0 +1,130 @@
+{
+  "duration_api_ms": 13900,
+  "stop_reason": "end_turn",
+  "session_id": "f322732d-ff21-4afb-9036-db8800af527f",
+  "total_cost_usd": 0.0013786,
+  "usage": {
+    "input_tokens": 4,
+    "cache_creation_input_tokens": 2200,
+    "cache_read_input_tokens": 18100,
+    "output_tokens": 1248,
+    "output_tokens_details": {
+      "thinking_tokens": 508
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 2200,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "global",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 526,
+        "cache_read_input_tokens": 9409,
+        "cache_creation_input_tokens": 1482,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 1482
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "modelUsage": {
+    "claude-haiku-5-5": {
+      "inputTokens": 1231,
+      "outputTokens": 1269,
+      "cacheReadInputTokens": 18100,
+      "cacheCreationInputTokens": 2200,
+      "webSearchRequests": 0,
+      "costUSD": 0.0013786,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 508,
+      "canonicalModel": "claude-haiku-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "extra_usage_disabled",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "safety_stops": 0,
+  "is_error": false,
+  "num_turns": 3,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "**Where:** The rules belong in the Domain project (`backend/src/InvoiceApp.Domain`). Put them in a new `ApprovalPolicy` class, a pure function of values that never receives or writes an `Invoice`. The limits go in `ApprovalLimits`. `ApprovalService` loads the invoice, asks the policy, and writes only after every rule passes. Controllers and `wwwroot` do no limit checks.\n\n**Response:** A refused approval returns HTTP 403 with a `{ error, code }` body. `error` states the rule, role, limit and invoice. The controller maps the service exception to this status. Other mappings: not found 404, wrong state 409, bad input 400.\n\n**Repo state:** `ApprovalPolicy.cs` and `ApprovalLimits.cs` don't exist yet. `ApprovalService.cs` is in Domain. The `specs/` folder isn't at this path, so I couldn't check spec 001 directly. The answer relies on `AGENTS.md`.",
+  "ttft_ms": 5746,
+  "type": "result",
+  "duration_ms": 11205,
+  "uuid": "4b6544ce-29b8-4aa5-8410-82a10dd1608b",
+  "ttft_stream_ms": 5735,
+  "time_to_request_ms": 390,
+  "time_to_request_phases_ms": {
+    "other": 77,
+    "system_prompt": 105,
+    "resume_other": 0,
+    "process_user_input": 3,
+    "input_attachments": 10,
+    "input_hooks": 4,
+    "tool_pool_refresh": 2,
+    "init_message": 73,
+    "engine_pickup": 5,
+    "message_prep": 2,
+    "model_config_wait": 2,
+    "autocompact": 6,
+    "query_setup": 2,
+    "model_gates": 1,
+    "tool_schema_build": 47,
+    "message_normalization": 9,
+    "client_creation": 14,
+    "request_build": 28
+  },
+  "turn_start_resume_kind": "none",
+  "process_turn_index": 0,
+  "time_to_request_loop_lag_ms": 340,
+  "time_to_request_cpu_ms": 453,
+  "time_to_request_major_faults": 4320,
+  "input_attachments_detail": {
+    "slowest_producer": "model",
+    "slowest_producer_ms": 6,
+    "cpu_ms": 0,
+    "major_faults": 90
+  },
+  "first_content_frame_ms": 5736,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

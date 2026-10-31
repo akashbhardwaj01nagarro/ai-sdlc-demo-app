@@ -1,0 +1,130 @@
+{
+  "duration_api_ms": 9315,
+  "stop_reason": "end_turn",
+  "session_id": "871b21e9-1bd7-47ed-993f-b4257d77880a",
+  "total_cost_usd": 0.0009688199999999999,
+  "usage": {
+    "input_tokens": 6,
+    "cache_creation_input_tokens": 1255,
+    "cache_read_input_tokens": 28002,
+    "output_tokens": 602,
+    "output_tokens_details": {
+      "thinking_tokens": 167
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 1255,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "global",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 306,
+        "cache_read_input_tokens": 9849,
+        "cache_creation_input_tokens": 122,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 122
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "modelUsage": {
+    "claude-haiku-5-5": {
+      "inputTokens": 1258,
+      "outputTokens": 624,
+      "cacheReadInputTokens": 28002,
+      "cacheCreationInputTokens": 1255,
+      "webSearchRequests": 0,
+      "costUSD": 0.0009688199999999999,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 167,
+      "canonicalModel": "claude-haiku-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "extra_usage_disabled",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "safety_stops": 0,
+  "is_error": false,
+  "num_turns": 3,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "**Invoice of 75,000.00:** Falls in FR-002's band (50,000.01 to 500,000.00), so it needs **one Director**. Managers cannot approve it alone.\n\n**Invoice of 600,000.00:** Above 500,000.00 under FR-003, so it needs **two approvals by different users**. The first must be a **Manager or a Director**, and the second must be a **Director**. The first approval is recorded (`FirstApprovedBy`, `FirstApprovedAt`) and the invoice stays `PendingApproval`. Only the second approval sets `Approved`.\n\nI could not check the spec itself. `specs/001-approval-limits/` does not exist under the current working directory, so this answer comes from the rule table in `AGENTS.md`.",
+  "ttft_ms": 6198,
+  "type": "result",
+  "duration_ms": 11869,
+  "uuid": "e6e8059f-0a97-4fcb-aa7b-998e107a619f",
+  "ttft_stream_ms": 6186,
+  "time_to_request_ms": 835,
+  "time_to_request_phases_ms": {
+    "other": 72,
+    "system_prompt": 287,
+    "resume_other": 0,
+    "process_user_input": 7,
+    "input_attachments": 28,
+    "input_hooks": 27,
+    "tool_pool_refresh": 5,
+    "init_message": 127,
+    "engine_pickup": 3,
+    "message_prep": 3,
+    "model_config_wait": 5,
+    "autocompact": 7,
+    "query_setup": 5,
+    "model_gates": 2,
+    "tool_schema_build": 29,
+    "message_normalization": 6,
+    "client_creation": 204,
+    "request_build": 18
+  },
+  "turn_start_resume_kind": "none",
+  "process_turn_index": 0,
+  "time_to_request_loop_lag_ms": 787,
+  "time_to_request_cpu_ms": 1031,
+  "time_to_request_major_faults": 4828,
+  "input_attachments_detail": {
+    "slowest_producer": "queued_commands",
+    "slowest_producer_ms": 18,
+    "cpu_ms": 31,
+    "major_faults": 134
+  },
+  "first_content_frame_ms": 6187,
+  "queued_turn_count": 0,
+  "result_index": 0
+}
