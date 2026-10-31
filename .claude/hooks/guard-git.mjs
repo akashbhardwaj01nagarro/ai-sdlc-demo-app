@@ -50,6 +50,18 @@ export function tokenize(segment) {
   return tokens;
 }
 
+// Drops shell redirections such as 2>&1, >/dev/null or "> out.txt" so they are not
+// mistaken for a remote name or another argument.
+export function withoutRedirections(tokens) {
+  const kept = [];
+  for (let index = 0; index < tokens.length; index += 1) {
+    const redirection = /^(\d*|&)(>>?|<)(.*)$/.exec(tokens[index]);
+    if (!redirection) kept.push(tokens[index]);
+    else if (redirection[3] === '') index += 1;
+  }
+  return kept;
+}
+
 function optionValue(args, names) {
   for (let index = 0; index < args.length; index += 1) {
     for (const name of names) {
@@ -66,7 +78,8 @@ function mentionsUpstream(text) {
 
 function checkPush(args) {
   if (args.includes('--no-verify')) return 'Do not skip hooks: push without --no-verify.';
-  if (args.some((arg) => arg === '--force' || arg === '-f' || /^-[a-zA-Z]*f[a-zA-Z]*$/.test(arg) || arg === '--mirror')) {
+  const isForce = (arg) => arg === '--force' || arg === '--mirror' || (/^-[a-zA-Z]+$/.test(arg) && arg.includes('f'));
+  if (args.some(isForce)) {
     return 'Force pushes are blocked. Add a new commit instead of rewriting pushed history.';
   }
   const positional = [];
@@ -102,8 +115,7 @@ function checkGh(args) {
     if (writes && args.some(mentionsUpstream)) return `gh api writes to ${UPSTREAM} are blocked; only read it.`;
     return null;
   }
-  const writeActions = GH_WRITE_ACTIONS[group];
-  if (!writeActions || !writeActions.has(action)) return null;
+  if (!GH_WRITE_ACTIONS[group]?.has(action)) return null;
   const repository = optionValue(args, ['--repo', '-R']);
   if (!repository) return `Pass --repo ${FORK} so the ${group} ${action} goes to the fork, never to ${UPSTREAM}.`;
   if (repository.toLowerCase() !== FORK.toLowerCase()) {
@@ -112,27 +124,37 @@ function checkGh(args) {
   return null;
 }
 
+function checkGit(args) {
+  let index = 0;
+  while (index < args.length && args[index].startsWith('-')) {
+    index += GIT_OPTIONS_WITH_VALUE.has(args[index]) ? 2 : 1;
+  }
+  const subcommandArgs = args.slice(index + 1);
+  switch (args[index]) {
+    case 'push':
+      return checkPush(subcommandArgs);
+    case 'commit':
+      return checkCommit(subcommandArgs);
+    default:
+      return null;
+  }
+}
+
+function checkSegment(segment) {
+  const tokens = withoutRedirections(tokenize(segment));
+  let position = 0;
+  while (position < tokens.length && /^[A-Za-z_]\w*=/.test(tokens[position])) position += 1;
+  const program = (tokens[position] ?? '').replace(/\.exe$/i, '').split(/[\\/]/).pop();
+  const rest = tokens.slice(position + 1);
+  if (program === 'git') return checkGit(rest);
+  if (program === 'gh') return checkGh(rest);
+  return null;
+}
+
 export function evaluate(command) {
   for (const segment of splitSegments(command)) {
-    const tokens = tokenize(segment);
-    let position = 0;
-    while (position < tokens.length && /^[A-Za-z_][A-Za-z0-9_]*=/.test(tokens[position])) position += 1;
-    const program = (tokens[position] ?? '').replace(/\.exe$/i, '').split(/[\\/]/).pop();
-    const rest = tokens.slice(position + 1);
-    if (program === 'git') {
-      let index = 0;
-      while (index < rest.length && rest[index].startsWith('-')) {
-        index += GIT_OPTIONS_WITH_VALUE.has(rest[index]) ? 2 : 1;
-      }
-      const subcommand = rest[index];
-      const subcommandArgs = rest.slice(index + 1);
-      const reason =
-        subcommand === 'push' ? checkPush(subcommandArgs) : subcommand === 'commit' ? checkCommit(subcommandArgs) : null;
-      if (reason) return reason;
-    } else if (program === 'gh') {
-      const reason = checkGh(rest);
-      if (reason) return reason;
-    }
+    const reason = checkSegment(segment);
+    if (reason) return reason;
   }
   return null;
 }

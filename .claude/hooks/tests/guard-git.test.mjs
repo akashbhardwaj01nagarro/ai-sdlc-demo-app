@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { evaluate, FORK, tokenize } from '../guard-git.mjs';
+import { evaluate, FORK, tokenize, withoutRedirections } from '../guard-git.mjs';
 
 const hook = fileURLToPath(new URL('../guard-git.mjs', import.meta.url));
 
@@ -10,6 +10,14 @@ test('allows pushes to origin and plain pushes', () => {
   for (const command of ['git push -u origin 001-approval-limits', 'git push', 'git push origin HEAD', 'cd repo && git push origin main']) {
     assert.equal(evaluate(command), null, command);
   }
+});
+
+test('ignores shell redirections around a push', () => {
+  for (const command of ['git push 2>&1 | tail -1', 'git push origin x >/dev/null 2>&1', 'git push > push.log', 'git push -u origin x &> out.txt']) {
+    assert.equal(evaluate(command), null, command);
+  }
+  assert.notEqual(evaluate('git push upstream main 2>&1'), null);
+  assert.deepEqual(withoutRedirections(['git', 'push', '2>&1', '>', 'log.txt', 'origin']), ['git', 'push', 'origin']);
 });
 
 test('blocks pushes to upstream, by name or URL, and other remotes', () => {
