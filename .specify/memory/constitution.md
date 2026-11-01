@@ -1,50 +1,80 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# Invoice Approval Demo App Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Rules Live in the Domain
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+Business rules MUST be implemented in the `InvoiceApp.Domain` project and nowhere else.
+Controllers MUST only adapt: they build the acting user from the signed-in session (never from a
+request body) and map domain exceptions to HTTP status codes. The web UI MUST only display what the
+server returns; it MUST NOT re-implement limits or role checks.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+Rationale: one place to read, test and mutate the rules; no second copy that can drift.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### II. Refuse Safely
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+Every rule MUST be checked before any state is written. A refused action MUST leave every field of
+the affected record unchanged, MUST NOT persist anything, and MUST return a reason that names the
+record and the rule that applied, with the facts it applied to (such as the role and the limit). Roles that a rule does not name MUST be refused
+(fail closed).
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+Rationale: repositories in this app hand out live objects, so a write before a refusal leaks into
+the store even without an explicit save.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+### III. Test-First Rules (NON-NEGOTIABLE)
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+Every rule MUST have an at-limit, an over-limit and a negative unit test, using literal boundary
+values rather than the production constants. Refusal tests MUST assert the reason, a full snapshot
+of the record taken before the attempt, and that the repository was not updated. Behaviour visible
+in the UI MUST also have a Playwright test that uses page objects and role-based locators.
+Assertions MUST NOT be weakened, skipped or deleted to make a test pass.
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+Rationale: the cases most likely to look right and be wrong are refusals and boundaries; mutation
+testing (Stryker.NET) is used to check that the tests actually catch them.
+
+### IV. Small, Reviewed Steps
+
+Work MUST land one user story per commit, and every commit MUST build and pass the unit tests on
+its own. An AI agent MUST be given one scoped step per prompt, never a whole feature. Every review
+finding MUST receive exactly one verdict (fixed, dismissed or deferred) with a reason; an agent may
+propose a verdict, a human decides.
+
+Rationale: small steps keep each change reviewable and make it obvious which prompt produced what.
+
+### V. Traceability
+
+Requirement IDs (FR-xxx) from the spec MUST appear in the tests (as traits), in commit messages and
+in review findings. Every AI interaction MUST be logged in the repository's AI interaction log with
+secrets and personal data redacted.
+
+Rationale: a reviewer can follow any rule from the spec to its code, its tests, its commit and the
+conversation that produced it.
+
+## Technology and Scope Constraints
+
+- ASP.NET Core 8 Web API, xUnit tests, Playwright end-to-end tests, in-memory storage; no new
+  runtime dependencies without a recorded reason in the plan.
+- Demo accounts in configuration are not real credentials; real credentials, tokens and customer
+  data MUST NOT be committed.
+- Commands, file layout, naming and review expectations are defined in `AGENTS.md`, which is the
+  operational guide for humans and agents; this constitution does not repeat them.
+
+## Development Workflow and Quality Gates
+
+- A feature starts as a Spec Kit specification with requirement IDs and user stories; the plan and
+  task list are derived from it and kept up to date.
+- Before a commit: build and unit tests pass; for UI-visible changes the Playwright suite passes;
+  the commit message states what changed and why.
+- Before a merge: the pull request has been reviewed with the review prompt in the `pr-review`
+  skill, every finding has a verdict in the pull request description, and mutation scores for the
+  rule code are recorded before and after.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+This constitution takes precedence over other practices in this repository. Amendments are made in
+a dedicated commit that updates this file, states the reason, and bumps the version: MAJOR for
+removing or redefining a principle, MINOR for adding a principle or materially expanding guidance,
+PATCH for clarifications. Every plan MUST pass the Constitution Check against these principles, and
+reviewers check compliance as part of the review expectations in `AGENTS.md`.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2026-11-01 | **Last Amended**: 2026-11-01

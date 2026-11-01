@@ -23,7 +23,7 @@ Who may approve depends on the approver's role and the invoice amount. Limits ar
 
 - FR-003: the first approval is recorded on the invoice (`FirstApprovedBy`, `FirstApprovedAt`) and the invoice stays `PendingApproval`. Only the second approval sets `Approved`, `DecidedBy` and `DecidedAt`.
 - FR-004: the same user never counts as both approvers on one invoice. A user is the signed-in username, compared trimmed and case-insensitively. This covers repeat clicks and concurrent requests: read, decide and write must happen as one step.
-- FR-005: a refused approval attempt returns a clear reason (the rule, the role, the limit and the invoice) and changes nothing: every invoice field keeps its value and the repository's `Update` is not called. A refused attempt is not a rejection; it never sets `Rejected`.
+- FR-005: a refused approval attempt returns a clear reason (the invoice and the rule that applied, with its facts: the role, the limit or the first approver) and changes nothing: every invoice field keeps its value and the repository's `Update` is not called. A refused attempt is not a rejection; it never sets `Rejected`.
 - Only Manager and Director can approve. Admin and any unknown role are refused (fail closed); Admin may still reject and delete.
 - Rejecting an invoice is not limited by role or amount.
 - Repositories hand out live objects. Check every rule first, then write. A field written before a refusal leaks into the store even without `Update`.
@@ -84,7 +84,7 @@ Reviewers, human or agent, check in this order:
 
 1. Each rule FR-001 to FR-005 holds, including the exact limits and the +0.01 boundaries.
 2. No path lets one user count as both approvers: repeats, case or whitespace variants, concurrent requests.
-3. Every refused path leaves every invoice field unchanged and skips `Update`, and its reason names the rule, role, limit and invoice.
+3. Every refused path leaves every invoice field unchanged and skips `Update`, and its reason names the invoice and the rule that applied, with its facts (role, limit or first approver).
 4. Rules live in Domain only; controllers adapt; JavaScript displays.
 5. For each rule, a plausible wrong implementation would fail at least one test.
 6. Approver identity comes from the session; no secrets or personal data are committed.

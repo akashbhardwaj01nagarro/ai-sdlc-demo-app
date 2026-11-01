@@ -38,7 +38,7 @@ Limits are inclusive and exact decimals. Identity is the session username, trimm
 - FR-002: Director approves 50,000.01 and 500,000.00; Manager refused at 500,000.00.
 - FR-003: 500,000.01 by a Manager or Director records the first approval and stays pending; a different Director completes it; a Manager or Admin as second approver is refused.
 - FR-004: same user twice is refused, including `DEMO.Director` and ` demo.director ` variants; a refusal keeps the existing first approval; two concurrent approvals by one user cannot both count.
-- FR-005: every refusal leaves the full snapshot equal and `UpdateCount == 0`; the reason names the rule, role, limit and invoice; a refusal never sets `Rejected`.
+- FR-005: every refusal leaves the full snapshot equal and `UpdateCount == 0`; the reason names the invoice and the rule that applied, with its facts (role, limit or first approver); a refusal never sets `Rejected`.
 - Roles: Admin, the legacy `Approver`, `manager` (wrong case) and an empty role are refused.
 
 ## Traps: wrong code that looks right, and the test that catches it
