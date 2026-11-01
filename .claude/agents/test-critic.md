@@ -5,13 +5,6 @@ tools: Read, Glob, Grep, Bash
 disallowedTools: Write, Edit, Agent, Skill
 skills:
   - approval-rules
-hooks:
-  Stop:
-    - hooks:
-        - type: command
-          command: node
-          args: ["${CLAUDE_PROJECT_DIR}/.claude/hooks/check-report.mjs", "test-critique"]
-          timeout: 10
 color: yellow
 ---
 

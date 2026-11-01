@@ -135,6 +135,17 @@ test('at SubagentStop an empty final message falls back to the hand-back in the 
   assert.equal(lastHandback(join(scratch, 'missing.jsonl')), '');
 });
 
+test('at SubagentStop the agent type picks the schema and other agents pass', () => {
+  const critique = { tests: [{ test: 'A.B', rule: 'FR-003', catches: 'x', weakness: null, verdict: 'keep', suggestion: null }], missing: [] };
+  const plan = planCheck({ hook_event_name: 'SubagentStop', agent_type: 'test-critic', last_assistant_message: message(critique) });
+  assert.deepEqual([plan.schemaName, plan.source], ['test-critique', 'final-message']);
+  assert.equal(planCheck({ hook_event_name: 'SubagentStop', agent_type: 'domain-implementer', last_assistant_message: 'done' }), null);
+  const blocked = runHook(null, { hook_event_name: 'SubagentStop', agent_type: 'review-rules', last_assistant_message: 'No problems found.' });
+  assert.equal(JSON.parse(blocked.stdout.toString()).decision, 'block');
+  const retry = runHook(null, { hook_event_name: 'SubagentStop', agent_type: 'review-rules', last_assistant_message: 'No problems found.', stop_hook_active: true });
+  assert.equal(retry.stdout.toString(), '');
+});
+
 test('every check is recorded in the AI log as a ReportCheck event', () => {
   runHook(null, { hook_event_name: 'PreToolUse', tool_name: 'SubagentHandback', agent_type: 'log-auditor', session_id: 's-check', tool_input: { message: 'nothing' } });
   assert.ok(existsSync(testLog));

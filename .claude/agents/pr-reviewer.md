@@ -6,13 +6,6 @@ disallowedTools: Write, Edit, Skill
 skills:
   - pr-review
   - approval-rules
-hooks:
-  Stop:
-    - hooks:
-        - type: command
-          command: node
-          args: ["${CLAUDE_PROJECT_DIR}/.claude/hooks/check-report.mjs", "review"]
-          timeout: 10
 color: red
 ---
 

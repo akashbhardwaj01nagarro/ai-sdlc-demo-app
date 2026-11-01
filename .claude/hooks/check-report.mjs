@@ -1,12 +1,14 @@
 // Makes the reviewing subagents hand back one fenced ```json report in a fixed shape, so
-// their output can be merged, rendered and compared run to run. It runs in two places:
-//   - PreToolUse on SubagentHandback (.claude/settings.json): the report a subagent hands
-//     back is checked before it leaves; a malformed one is denied with the reason, so the
-//     subagent fixes the format and hands back again. The schema follows from agent_type.
-//   - Stop in a subagent's frontmatter (runs as SubagentStop):
-//       node check-report.mjs <review|test-critique|mutation|audit>
-//     It checks the final message, or the last hand-back in the subagent's transcript, and
-//     blocks once; when stop_hook_active is set the subagent is already retrying.
+// their output can be merged, rendered and compared run to run. Both hooks are registered
+// in .claude/settings.json and pick the schema from agent_type (other agents pass):
+//   - PreToolUse on SubagentHandback: a subagent started with the Agent tool returns its
+//     report through this tool call; a malformed report is denied with the reason, so the
+//     subagent fixes the format and hands back again.
+//   - SubagentStop: checks the final message (workflow agents end with it) or, when that
+//     is empty, the last hand-back in the subagent's transcript, and blocks once; when
+//     stop_hook_active is set the subagent is already retrying.
+// Hooks declared in a subagent's frontmatter never ran in this harness, so none are used.
+// A schema can also be named directly: node check-report.mjs <review|test-critique|mutation|audit>
 // Every check is recorded in the AI log as a "ReportCheck" event.
 import { appendFileSync, existsSync, readFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';

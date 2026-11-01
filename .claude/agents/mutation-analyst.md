@@ -6,13 +6,6 @@ disallowedTools: Write, Edit, Agent, Skill
 skills:
   - mutation-testing
   - approval-rules
-hooks:
-  Stop:
-    - hooks:
-        - type: command
-          command: node
-          args: ["${CLAUDE_PROJECT_DIR}/.claude/hooks/check-report.mjs", "mutation"]
-          timeout: 10
 color: orange
 ---
 
