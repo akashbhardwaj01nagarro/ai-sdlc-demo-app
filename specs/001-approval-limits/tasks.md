@@ -93,9 +93,9 @@ passes; manually, demo.manager is refused on 60,000 with the reason shown and th
 
 **Independent Test**: `cd e2e && npx playwright test` passes against a freshly started app.
 
-- [ ] T022 [P] [US1] Create page objects `LoginPage`, `InvoicesPage`, `ApprovalsPage` with role and label locators only, in e2e/pages/
-- [ ] T023 [US1] Write e2e/tests/approval-limits.spec.ts: demo.manager creates and submits a uniquely named 60,000 invoice, approves it, the test asserts the 403 response with `code: AmountAboveRoleLimit`, the exact alert text, and after `page.reload()` the invoice is still Pending Approval with the same amount and still offered for approval
-- [ ] T024 [P] [US1] Reuse a running server only when `PW_REUSE_SERVER=1` and add `PW_SLOWMO` for demos in e2e/playwright.config.ts
+- [x] T022 [P] [US1] Create page objects `LoginPage`, `InvoicesPage`, `ApprovalsPage` with role and label locators only, in e2e/pages/
+- [x] T023 [US1] Write e2e/tests/approval-limits.spec.ts: demo.manager creates and submits a uniquely named 60,000 invoice, approves it, the test asserts the 403 response with `code: AmountAboveRoleLimit`, the exact alert text, and after `page.reload()` the invoice is still Pending Approval with the same amount and still offered for approval
+- [x] T024 [P] [US1] Reuse a running server only when `PW_REUSE_SERVER=1` and add `PW_SLOWMO` for demos in e2e/playwright.config.ts
 
 **Checkpoint**: committed as `test(e2e): refuse an over-limit approval through the UI`.
 
