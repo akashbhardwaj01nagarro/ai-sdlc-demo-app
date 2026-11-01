@@ -5,7 +5,8 @@ always the signed-in user; no request body field identifies the approver.
 
 ## POST /api/approvals/{invoiceId}/approve
 
-Role gate: Manager, Director, Admin (Admin passes the gate so it gets the Domain's clear refusal).
+No role gate: every signed-in role reaches the Domain, which decides who may approve. Admin and every other role
+that is not Manager or Director get the `RoleCannotApprove` refusal below (FR-006).
 
 | Situation | Status | Body |
 | --- | --- | --- |
@@ -14,7 +15,6 @@ Role gate: Manager, Director, Admin (Admin passes the gate so it gets the Domain
 | Invoice not found | 404 | `{ "error": "Invoice INV-x was not found." }` |
 | Invoice not pending | 409 | `{ "error": "Invoice INV-x is Approved; only pending invoices can be decided." }` |
 | Refused by an approval rule | 403 | `{ "error": "Approval refused: …", "code": "<ApprovalRefusal>" }` |
-| Role not allowed by the gate | 403 | `{ "error": "Your role (…) cannot do this. Allowed roles: …" }` |
 | Not signed in | 401 | empty |
 
 Refusal messages (amounts in invariant culture with thousands separators and two decimals, more when the
@@ -28,8 +28,14 @@ amount has more, never rounded: `60,000.00`, `50,000.001`):
 
 ## POST /api/approvals/{invoiceId}/reject
 
-Unchanged behaviour: body `{ "reason": "…" }`, 200 with the rejected invoice, 400 without a reason,
-404/409 as above. Not limited by role or amount; a recorded first approval is kept.
+Role gate: Manager, Director, Admin (Admin may reject although it cannot approve).
+
+| Situation | Status | Body |
+| --- | --- | --- |
+| Role not allowed by the gate | 403 | `{ "error": "Your role (…) cannot do this. Allowed roles: Manager, Director, Admin." }` |
+
+Behind the gate rejecting is unchanged and not limited by role or amount: body `{ "reason": "…" }`, 200 with
+the rejected invoice, 400 without a reason, 404/409 as above; a recorded first approval is kept.
 
 ## Invoice JSON (US2 additions)
 

@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{7419651D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvoiceApp.Tests", "tests\InvoiceApp.Tests\InvoiceApp.Tests.csproj", "{1F08E43D-1B0D-4A99-8A75-096693CA0E39}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvoiceApp.Api.Tests", "tests\InvoiceApp.Api.Tests\InvoiceApp.Api.Tests.csproj", "{B013CB16-6729-4E12-86C6-8C4A8368E4B8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,10 +36,15 @@ Global
 		{1F08E43D-1B0D-4A99-8A75-096693CA0E39}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F08E43D-1B0D-4A99-8A75-096693CA0E39}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1F08E43D-1B0D-4A99-8A75-096693CA0E39}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B013CB16-6729-4E12-86C6-8C4A8368E4B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B013CB16-6729-4E12-86C6-8C4A8368E4B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B013CB16-6729-4E12-86C6-8C4A8368E4B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B013CB16-6729-4E12-86C6-8C4A8368E4B8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{2EE7E746-5EBB-456D-B087-ED7C8739E29F} = {3A4242C0-22F6-4D7B-9488-3822506178A8}
 		{E4889265-E191-40B5-BFDC-9170A53A0016} = {3A4242C0-22F6-4D7B-9488-3822506178A8}
 		{1F08E43D-1B0D-4A99-8A75-096693CA0E39} = {7419651D-FC40-4BFF-9BEA-8991B34C1BCF}
+		{B013CB16-6729-4E12-86C6-8C4A8368E4B8} = {7419651D-FC40-4BFF-9BEA-8991B34C1BCF}
 	EndGlobalSection
 EndGlobal

@@ -7,6 +7,7 @@ Invoice approval demo app: ASP.NET Core 8 Web API with a small static web UI.
 - `backend/src/InvoiceApp.Domain`: business rules, no web or storage code. `ApprovalService` owns the invoice lifecycle (Draft, PendingApproval, Approved, Rejected).
 - `backend/src/InvoiceApp.Api`: controllers, sign-in (`Auth/`), in-memory repository, and the web UI under `wwwroot/`.
 - `backend/tests/InvoiceApp.Tests`: xUnit tests, one test class per class under test, named `<ClassUnderTest>Tests`.
+- `backend/tests/InvoiceApp.Api.Tests`: API contract tests with `WebApplicationFactory`, one class per controller (and `ProgramTests` for the service registrations in `Program.cs`).
 - `e2e`: Playwright end-to-end tests (`tests/`) and page objects (`pages/`).
 - `docs/use-cases`: short briefs for features we may build.
 - `specs/`: Spec Kit specifications; a spec is the source of truth for the feature it describes.
@@ -38,7 +39,7 @@ Who may approve depends on the approver's role and the invoice amount. Limits ar
 
 - Controllers live in `Controllers/`, one per resource, route `api/[controller]`. Request bodies are `record` types declared inside the controller.
 - Controllers inherit `ApiControllerBase` and use `Handle(...)` so service errors map to status codes as described under Layering.
-- Every endpoint is behind sign-in. Restrict actions with `[RequireRole("...")]`: destructive actions are Admin only. Approval authority is decided in Domain, not by the role gate.
+- Every endpoint is behind sign-in. Restrict actions with `[RequireRole("...")]`: destructive actions are Admin only. Approval authority is decided in Domain, not by the role gate: no `[RequireRole]` covers approve, so every signed-in role reaches `ApprovalPolicy`, and a role that cannot approve gets its 403 `{ error, code }`.
 - Business rules go in the Domain project, never in controllers.
 - Register services in `Program.cs`. Repositories are interfaces in Domain with an in-memory implementation in Api.
 - Every new rule or endpoint needs tests. Use `FakeInvoiceRepository` in tests.
@@ -94,7 +95,7 @@ Each finding has a severity (blocker, major, minor or nit) and a `file:line`. In
 
 - fixed: link the commit that fixes it;
 - dismissed: give the reason and the evidence, such as a test name or a spec clause;
-- deferred: give the reason and link a follow-up issue.
+- deferred: give the reason (and link a follow-up issue where the repository tracks issues).
 
 An agent may propose a verdict; a human decides. A finding about FR-004 or FR-005 can only be dismissed with a test that proves it wrong.
 

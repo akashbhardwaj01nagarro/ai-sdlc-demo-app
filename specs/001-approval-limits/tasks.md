@@ -74,7 +74,7 @@ passes; manually, demo.manager is refused on 60,000 with the reason shown and th
 - [x] T014 [US1] Create static `ApprovalPolicy.Decide(invoiceId, amount, approver)` with the refusal order and messages from contracts/approvals-api.md in backend/src/InvoiceApp.Domain/ApprovalPolicy.cs
 - [x] T015 [US1] Change `ApprovalService.Approve(string invoiceId, Approver approver)` to find, ensure pending, decide, then write and `Update` once; remove the old overload, in backend/src/InvoiceApp.Domain/ApprovalService.cs
 - [x] T016 [US1] Map `ApprovalRefusedException` to `StatusCode(403, new { error, code })` before the other catches in backend/src/InvoiceApp.Api/Controllers/ApiControllerBase.cs
-- [x] T017 [US1] Gate approvals with `[RequireRole(Manager, Director, Admin)]` and build the `Approver` from the session in backend/src/InvoiceApp.Api/Controllers/ApprovalsController.cs
+- [x] T017 [US1] Build the `Approver` from the session; approve has no role gate so every role reaches the Domain (review R-04), and reject is gated to Manager, Director and Admin in backend/src/InvoiceApp.Api/Controllers/ApprovalsController.cs
 - [x] T018 [P] [US1] Return a JSON `{ error }` body with the 403 in backend/src/InvoiceApp.Api/Auth/RequireRoleAttribute.cs
 - [x] T019 [P] [US1] Replace demo.approver with demo.manager (Manager) and demo.director (Director) in backend/src/InvoiceApp.Api/appsettings.json; set seed INV-1003 `DecidedBy` to demo.manager in backend/src/InvoiceApp.Api/InMemoryInvoiceRepository.cs
 - [x] T020 [P] [US1] Update demo accounts in README.md and AGENTS.md

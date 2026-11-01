@@ -11,6 +11,9 @@ builder.Services
 
 builder.Services.Configure<DemoUsersOptions>(builder.Configuration);
 builder.Services.AddSingleton<SessionStore>();
+// Keep this a singleton: ApprovalService's decision gate is per repository instance, so FR-004 under simultaneous
+// requests holds only while every request shares this one. A database-backed repository would need optimistic
+// concurrency instead (specs/001-approval-limits/research.md R6).
 builder.Services.AddSingleton<IInvoiceRepository, InMemoryInvoiceRepository>();
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<ApprovalService>();
