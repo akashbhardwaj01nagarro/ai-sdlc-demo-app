@@ -134,8 +134,8 @@ manually, the 640,000 scenario in quickstart.md behaves as described.
 
 ## Phase 6: Polish & Cross-Cutting Concerns
 
-- [ ] T034 Run Stryker (`-m "**/Approv*.cs"` and whole project) and save docs/mutation/02-after-feature-*.md
-- [ ] T035 mutation-analyst triages every surviving approval mutant; add the missing tests; save docs/mutation/03-after-hardening-*.md
+- [x] T034 Run Stryker (`-m "**/Approv*.cs"` and whole project) and save docs/mutation/02-after-feature-*.md
+- [x] T035 mutation-analyst triages every surviving approval mutant; add the missing tests; save docs/mutation/03-after-hardening-*.md
 - [ ] T036 Run scripts/per-commit-tests.sh and save docs/evidence/per-commit-tests.txt
 - [ ] T037 Open the pull request on the fork; pr-reviewer reviews it; save docs/review/round-1.json and .md; record a verdict for every finding in the PR description
 - [ ] T038 Backfill, re-redact, render and audit the AI log in ai-logs/; write ASSIGNMENT.md

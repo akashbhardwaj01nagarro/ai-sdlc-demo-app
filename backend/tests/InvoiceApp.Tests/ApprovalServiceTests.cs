@@ -56,6 +56,7 @@ public class ApprovalServiceTests
         Assert.Equal(InvoiceStatus.PendingApproval, result.Status);
     }
 
+    // The message is the error text of the 409 that the UI shows, so it names the invoice and its current state.
     [Theory]
     [Trait("Rule", "lifecycle")]
     [InlineData(InvoiceStatus.PendingApproval)]
@@ -67,8 +68,9 @@ public class ApprovalServiceTests
         var service = new ApprovalService(repository);
         var before = InvoiceSnapshot.Of(repository.GetById(InvoiceId)!);
 
-        Assert.Throws<InvalidOperationException>(() => service.Submit(InvoiceId));
+        var error = Assert.Throws<InvalidOperationException>(() => service.Submit(InvoiceId));
 
+        Assert.Equal($"Invoice INV-2001 is {status}; only drafts can be submitted.", error.Message);
         Assert.Equal(before, InvoiceSnapshot.Of(repository.GetById(InvoiceId)!));
         Assert.Equal(0, repository.UpdateCount);
     }
@@ -492,6 +494,8 @@ public class ApprovalServiceTests
         Assert.Equal("demo.manager", result.DecidedBy);
     }
 
+    // The message is the error text of the 400 that the UI shows. ArgumentException appends the parameter name
+    // to it, so a lost message still reads " (Parameter 'reason')": only the full text shows that it is missing.
     [Fact]
     [Trait("Rule", "lifecycle")]
     public void Reject_RequiresAReason()
@@ -503,6 +507,7 @@ public class ApprovalServiceTests
         var error = Assert.Throws<ArgumentException>(() => service.Reject(InvoiceId, "demo.manager", "  "));
 
         Assert.Equal("reason", error.ParamName);
+        Assert.Equal("A reason is required to reject an invoice. (Parameter 'reason')", error.Message);
         Assert.Equal(before, InvoiceSnapshot.Of(repository.GetById(InvoiceId)!));
         Assert.Equal(0, repository.UpdateCount);
     }

@@ -12,13 +12,18 @@ public static class ApprovalPolicy
 {
     public static ApprovalOutcome Decide(string invoiceId, decimal amount, string? firstApprovedBy, Approver approver)
     {
-        if (LimitFor(approver.Role) is not decimal roleLimit)
+        // A null check, not `is not decimal roleLimit`: that variable is definitely assigned only because the throw
+        // ends the branch, so a mutant of this guard would not compile and Stryker would drop every mutant in Decide.
+        var limit = LimitFor(approver.Role);
+        if (limit is null)
         {
             throw new ApprovalRefusedException(
                 ApprovalRefusal.RoleCannotApprove,
                 $"Approval refused: invoice {invoiceId} cannot be approved by the {approver.Role} role. " +
                 "Only Managers and Directors can approve invoices.");
         }
+
+        var roleLimit = limit.Value;
 
         // Above the Director limit two different users approve (FR-003): the first approval is only recorded,
         // and the second, from a Director, approves the invoice.
