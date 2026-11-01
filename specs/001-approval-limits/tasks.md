@@ -43,8 +43,8 @@ Web app per plan.md: `backend/src/InvoiceApp.Domain`, `backend/src/InvoiceApp.Ap
 
 **Purpose**: Test helpers every rule test needs. Delivered in the US1 commit.
 
-- [ ] T005 [P] Add `public int UpdateCount { get; private set; }` incremented by `Update` (still storing nothing) in backend/tests/InvoiceApp.Tests/FakeInvoiceRepository.cs
-- [ ] T006 [P] Create `InvoiceSnapshot.Of(Invoice)` that copies every public property value by reflection and throws for non-value, non-string properties, in backend/tests/InvoiceApp.Tests/InvoiceSnapshot.cs
+- [x] T005 [P] Add `public int UpdateCount { get; private set; }` incremented by `Update` (still storing nothing) in backend/tests/InvoiceApp.Tests/FakeInvoiceRepository.cs
+- [x] T006 [P] Create `InvoiceSnapshot.Of(Invoice)` that copies every public property value by reflection and throws for non-value, non-string properties, in backend/tests/InvoiceApp.Tests/InvoiceSnapshot.cs
 
 **Checkpoint**: helpers compile; existing 7 tests still pass.
 
@@ -61,27 +61,27 @@ passes; manually, demo.manager is refused on 60,000 with the reason shown and th
 
 ### Tests for User Story 1 (test-author, written first)
 
-- [ ] T007 [P] [US1] Write `ApprovalPolicyTests` with literal boundaries: Manager approves 0.01 and 50,000.00, refused at 50,000.01 and 500,000.00 (`AmountAboveRoleLimit`, exact message); Director approves 50,000.01 and 500,000.00; Manager and Director refused at 500,000.01 (`TwoApproversRequired`); Admin, `Approver`, `manager`, `Director ` and empty role refused (`RoleCannotApprove`); amounts formatted `N2` under en-IN culture; each test tagged `[Trait("Rule","FR-00x")]`, in backend/tests/InvoiceApp.Tests/ApprovalPolicyTests.cs
-- [ ] T008 [P] [US1] Extend `ApprovalServiceTests`: existing tests pass an `Approver`; approval within limit sets Status, DecidedBy, DecidedAt and `UpdateCount == 1`; a `[Theory]` of refused attempts (Manager 50,000.01, Admin 100, Director 500,000.01) asserts the exception type, the reason code, an equal `InvoiceSnapshot` and `UpdateCount == 0`; 404 and 409 checked before authority; mutant-killers for `Update` in Submit and Reject, for Reject's DecidedBy/DecidedAt and for Reject on a non-pending invoice, in backend/tests/InvoiceApp.Tests/ApprovalServiceTests.cs
+- [x] T007 [P] [US1] Write `ApprovalPolicyTests` with literal boundaries: Manager approves 0.01 and 50,000.00, refused at 50,000.01 and 500,000.00 (`AmountAboveRoleLimit`, exact message); Director approves 50,000.01 and 500,000.00; Manager and Director refused at 500,000.01 (`TwoApproversRequired`); Admin, `Approver`, `manager`, `Director ` and empty role refused (`RoleCannotApprove`); amounts formatted invariantly under en-IN and de-DE, sub-cent amounts shown exactly; each test tagged `[Trait("Rule","FR-00x")]`, in backend/tests/InvoiceApp.Tests/ApprovalPolicyTests.cs
+- [x] T008 [P] [US1] Extend `ApprovalServiceTests`: existing tests pass an `Approver`; approval within limit sets Status, DecidedBy, DecidedAt and `UpdateCount == 1`; a `[Theory]` of refused attempts (Manager 50,000.01, Admin 100, Director 500,000.01) asserts the exception type, the reason code, an equal `InvoiceSnapshot` and `UpdateCount == 0`; 404 and 409 checked before authority; mutant-killers for `Update` in Submit and Reject, for Reject's DecidedBy/DecidedAt and for Reject on a non-pending invoice, in backend/tests/InvoiceApp.Tests/ApprovalServiceTests.cs
 
 ### Implementation for User Story 1 (domain-implementer)
 
-- [ ] T009 [P] [US1] Create `ApprovalLimits` (`ManagerLimit = 50_000m`, `DirectorLimit = 500_000m`) in backend/src/InvoiceApp.Domain/ApprovalLimits.cs
-- [ ] T010 [P] [US1] Create `ApprovalRoles` (Manager, Director, Admin string constants) in backend/src/InvoiceApp.Domain/ApprovalRoles.cs
-- [ ] T011 [P] [US1] Create `record Approver(string Username, string Role)` in backend/src/InvoiceApp.Domain/Approver.cs
-- [ ] T012 [P] [US1] Create `ApprovalOutcome { Approved }` in backend/src/InvoiceApp.Domain/ApprovalOutcome.cs and `ApprovalRefusal { RoleCannotApprove, AmountAboveRoleLimit, TwoApproversRequired }` in backend/src/InvoiceApp.Domain/ApprovalRefusal.cs
-- [ ] T013 [P] [US1] Create `ApprovalRefusedException : Exception` with an `ApprovalRefusal Reason` property in backend/src/InvoiceApp.Domain/ApprovalRefusedException.cs
-- [ ] T014 [US1] Create static `ApprovalPolicy.Decide(invoiceId, amount, approver)` with the refusal order and messages from contracts/approvals-api.md in backend/src/InvoiceApp.Domain/ApprovalPolicy.cs
-- [ ] T015 [US1] Change `ApprovalService.Approve(string invoiceId, Approver approver)` to find, ensure pending, decide, then write and `Update` once; remove the old overload, in backend/src/InvoiceApp.Domain/ApprovalService.cs
-- [ ] T016 [US1] Map `ApprovalRefusedException` to `StatusCode(403, new { error, code })` before the other catches in backend/src/InvoiceApp.Api/Controllers/ApiControllerBase.cs
-- [ ] T017 [US1] Gate approvals with `[RequireRole(Manager, Director, Admin)]` and build the `Approver` from the session in backend/src/InvoiceApp.Api/Controllers/ApprovalsController.cs
-- [ ] T018 [P] [US1] Return a JSON `{ error }` body with the 403 in backend/src/InvoiceApp.Api/Auth/RequireRoleAttribute.cs
-- [ ] T019 [P] [US1] Replace demo.approver with demo.manager (Manager) and demo.director (Director) in backend/src/InvoiceApp.Api/appsettings.json; set seed INV-1003 `DecidedBy` to demo.manager in backend/src/InvoiceApp.Api/InMemoryInvoiceRepository.cs
-- [ ] T020 [P] [US1] Update demo accounts in README.md and AGENTS.md
+- [x] T009 [P] [US1] Create `ApprovalLimits` (`ManagerLimit = 50_000m`, `DirectorLimit = 500_000m`) in backend/src/InvoiceApp.Domain/ApprovalLimits.cs
+- [x] T010 [P] [US1] Create `ApprovalRoles` (Manager, Director, Admin string constants) in backend/src/InvoiceApp.Domain/ApprovalRoles.cs
+- [x] T011 [P] [US1] Create `record Approver(string Username, string Role)` in backend/src/InvoiceApp.Domain/Approver.cs
+- [x] T012 [P] [US1] Create `ApprovalOutcome { Approved }` in backend/src/InvoiceApp.Domain/ApprovalOutcome.cs and `ApprovalRefusal { RoleCannotApprove, AmountAboveRoleLimit, TwoApproversRequired }` in backend/src/InvoiceApp.Domain/ApprovalRefusal.cs
+- [x] T013 [P] [US1] Create `ApprovalRefusedException : Exception` with an `ApprovalRefusal Reason` property in backend/src/InvoiceApp.Domain/ApprovalRefusedException.cs
+- [x] T014 [US1] Create static `ApprovalPolicy.Decide(invoiceId, amount, approver)` with the refusal order and messages from contracts/approvals-api.md in backend/src/InvoiceApp.Domain/ApprovalPolicy.cs
+- [x] T015 [US1] Change `ApprovalService.Approve(string invoiceId, Approver approver)` to find, ensure pending, decide, then write and `Update` once; remove the old overload, in backend/src/InvoiceApp.Domain/ApprovalService.cs
+- [x] T016 [US1] Map `ApprovalRefusedException` to `StatusCode(403, new { error, code })` before the other catches in backend/src/InvoiceApp.Api/Controllers/ApiControllerBase.cs
+- [x] T017 [US1] Gate approvals with `[RequireRole(Manager, Director, Admin)]` and build the `Approver` from the session in backend/src/InvoiceApp.Api/Controllers/ApprovalsController.cs
+- [x] T018 [P] [US1] Return a JSON `{ error }` body with the 403 in backend/src/InvoiceApp.Api/Auth/RequireRoleAttribute.cs
+- [x] T019 [P] [US1] Replace demo.approver with demo.manager (Manager) and demo.director (Director) in backend/src/InvoiceApp.Api/appsettings.json; set seed INV-1003 `DecidedBy` to demo.manager in backend/src/InvoiceApp.Api/InMemoryInvoiceRepository.cs
+- [x] T020 [P] [US1] Update demo accounts in README.md and AGENTS.md
 
 ### Review for User Story 1
 
-- [ ] T021 [US1] test-critic reviews every US1 test; fix each weakness it confirms; record the review in docs/evidence/test-review/us1.json
+- [x] T021 [US1] test-critic reviews every US1 test; fix each weakness it confirms; record the review in docs/evidence/test-review/us1.md and us1-critic.json
 
 **Checkpoint**: US1 complete, committed as `feat(approvals): enforce single-approver limits by role`.
 
@@ -126,7 +126,7 @@ manually, the 640,000 scenario in quickstart.md behaves as described.
 
 ### Review for User Story 2
 
-- [ ] T033 [US2] test-critic reviews every US2 test; fix each confirmed weakness; record the review in docs/evidence/test-review/us2.json
+- [ ] T033 [US2] test-critic reviews every US2 test; fix each confirmed weakness; record the review in docs/evidence/test-review/us2.md and us2-critic.json
 
 **Checkpoint**: US2 complete, committed as `feat(approvals): require two distinct approvers above 500,000`.
 

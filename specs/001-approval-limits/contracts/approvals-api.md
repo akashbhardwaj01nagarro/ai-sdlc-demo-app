@@ -17,7 +17,8 @@ Role gate: Manager, Director, Admin (Admin passes the gate so it gets the Domain
 | Role not allowed by the gate | 403 | `{ "error": "Your role (…) cannot do this. Allowed roles: …" }` |
 | Not signed in | 401 | empty |
 
-Refusal messages (amounts `N2`, invariant culture):
+Refusal messages (amounts in invariant culture with thousands separators and two decimals, more when the
+amount has more, never rounded: `60,000.00`, `50,000.001`):
 
 - `RoleCannotApprove`: `Approval refused: invoice {id} cannot be approved by the {role} role. Only Managers and Directors can approve invoices.`
 - `TwoApproversRequired` (US1 only): `Approval refused: invoice {id} is {amount}. Invoices above 500,000.00 need two approvers, which are not supported yet.`

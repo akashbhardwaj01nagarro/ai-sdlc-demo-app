@@ -36,8 +36,9 @@ and a critic, plus the product owner's answers). This file records each decision
 
 - **Decision**: not found (404) → not pending (409) → role cannot approve → two approvers required
   (US1 only) → amount above role limit → same approver twice → director required. Messages start with
-  "Approval refused:" and name the invoice, amount, limit and role; amounts use `N2` with
-  `CultureInfo.InvariantCulture`.
+  "Approval refused:" and name the invoice, amount, limit and role; amounts use the invariant
+  culture with thousands separators, two decimals, and every further significant decimal
+  (`#,##0.00` plus optional digits), so a sub-cent amount is never rounded into the limit it exceeds.
 - **Rationale**: state before identity; identity before amount; the same-user reason before the role
   reason because no change of role can fix it. Invariant formatting avoids "6,00,000.00" on en-IN.
 

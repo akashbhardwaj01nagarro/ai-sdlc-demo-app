@@ -67,7 +67,7 @@ As a finance organisation we require two different people to approve any invoice
 - A refused second approval never removes or replaces the existing first approval.
 - After a refused attempt the invoice can still be approved by someone who is allowed to.
 - Role names are matched exactly; a role spelled differently (for example `manager`) is not a Manager.
-- Amounts in reasons are shown with two decimals and thousands separators, independent of the reader's regional settings.
+- Amounts in reasons are shown with thousands separators and at least two decimals, plus every further significant decimal (50,000.001 is never shown as 50,000.00), independent of the reader's regional settings.
 
 ## Requirements *(mandatory)*
 

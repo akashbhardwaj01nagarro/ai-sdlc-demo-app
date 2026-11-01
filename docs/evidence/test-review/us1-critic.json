@@ -1,0 +1,246 @@
+{
+  "tests": [
+    {
+      "test": "ApprovalPolicyTests.Decide_ManagerApprovesTheSmallestAmount",
+      "rule": "FR-001",
+      "catches": "Manager missing from the role map (LimitFor returns null for Manager); an inverted comparison (amount < roleLimit refuses)",
+      "weakness": "No unique kill among plausible mutants: everything it catches also fails Decide_ManagerApprovesExactlyTheManagerLimit or the 50,000.01 refusal. Kept because the minimum matrix requires the 0.01 case.",
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalPolicyTests.Decide_ManagerApprovesExactlyTheManagerLimit",
+      "rule": "FR-001",
+      "catches": "amount >= roleLimit (the < instead of <= trap); a ManagerLimit below 50,000.00 such as 49_999.99m",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalPolicyTests.Decide_DirectorApprovesExactlyTheManagerLimit",
+      "rule": "FR-001",
+      "catches": "a tiered implementation that derives one required role from the amount and compares it exactly (requiredRole = amount <= 50000m ? Manager : Director; refuse if role != requiredRole), which refuses a Director on Manager-tier invoices; Director missing from the role map",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalPolicyTests.Decide_RefusesManagerOneCentAboveTheManagerLimit",
+      "rule": "FR-001",
+      "catches": "rounding or truncating to whole units before comparing (Math.Round, decimal.Truncate, (long) cast turn 50,000.01 into 50,000); ManagerLimit of 50,000.01 or more; Manager mapped to the Director limit; wrong reason code; a message missing the invoice, amount, limit, role or who must approve",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalPolicyTests.Decide_RefusesManagerAtTheDirectorLimit",
+      "rule": "FR-001",
+      "catches": "a two-approver threshold of >= 500000m (the Manager would get TwoApproversRequired instead of AmountAboveRoleLimit); Manager given the Director limit",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalPolicyTests.Decide_DirectorApprovesOneCentAboveTheManagerLimit",
+      "rule": "FR-002",
+      "catches": "Director mapped to the Manager limit; one global 50,000.00 limit applied to every role (amount > ApprovalLimits.ManagerLimit refuses everyone)",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalPolicyTests.Decide_DirectorApprovesExactlyTheDirectorLimit",
+      "rule": "FR-002",
+      "catches": "two-approver threshold >= 500000m; DirectorLimit below 500,000.00; amount >= roleLimit for Directors",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalPolicyTests.Decide_RefusesDirectorOneCentAboveTheDirectorLimit",
+      "rule": "FR-002",
+      "catches": "no two-approver branch (the Director then gets AmountAboveRoleLimit, 'A Director must approve it'); rounding, truncation or a float cast before comparing ((float)500000.01m == 500000f); threshold > 500000.01m; a message without the amount or the 500,000.00 threshold",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalPolicyTests.Decide_RefusesManagerAboveTheDirectorLimitAsTwoApproversRequired",
+      "rule": "FR-001",
+      "catches": "checks in the wrong order (role limit before the two-approver threshold), which gives a Manager AmountAboveRoleLimit at 500,000.01 although US1 scenario 6 requires the two-approver reason",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalPolicyTests.Decide_RefusesARoleThatCannotApprove",
+      "rule": "FR-006",
+      "catches": "default-allow for unknown roles (_ => ManagerLimit); case-insensitive role match (manager); trimmed role match ('Director '); the legacy Approver role still mapped to a limit; empty role allowed; a message without the invoice or the role",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalPolicyTests.Decide_RefusesTheRoleBeforeCheckingTheAmount",
+      "rule": "FR-006",
+      "catches": "role check placed after the amount checks (or LimitFor(role) ?? ManagerLimit with the role refused later): Admin then gets TwoApproversRequired at 600,000 or AmountAboveRoleLimit at 60,000",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalPolicyTests.Decide_FormatsAmountsIndependentOfTheCurrentCulture",
+      "rule": "FR-005",
+      "catches": "ToString(\"N2\") or {amount:N2} using the current culture, for the amount (en-IN 2,50,000.00 and 12,34,567.89) and for the limit (de-DE 50.000,00, en-IN 5,00,000.00); the guard assertion proves each culture really formats differently",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalServiceTests.Submit_MovesDraftToPendingApproval",
+      "rule": "other",
+      "catches": "lifecycle: Submit not setting PendingApproval",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalServiceTests.Submit_RejectsInvoiceThatIsNotADraft",
+      "rule": "other",
+      "catches": "lifecycle: the draft check removed from Submit",
+      "weakness": "Type-only, one status, no snapshot or UpdateCount: a Submit that sets Status = PendingApproval (or calls Update) before the check still throws InvalidOperationException and passes, although an Approved invoice has been reopened",
+      "verdict": "strengthen",
+      "suggestion": "Make it a [Theory] over PendingApproval, Approved and Rejected using InvoiceOf(...), take InvoiceSnapshot.Of before the call, and assert the snapshot is equal and UpdateCount == 0 afterwards, like Reject_RefusesInvoiceThatIsNotPending"
+    },
+    {
+      "test": "ApprovalServiceTests.Submit_UpdatesTheRepositoryOnce",
+      "rule": "other",
+      "catches": "lifecycle: Update removed from Submit or called twice",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalServiceTests.Approve_SetsStatusApproverAndTimestamp",
+      "rule": "FR-001",
+      "catches": "Approve not writing Status, DecidedBy or DecidedAt; a Manager refused at 100.00",
+      "weakness": "Strict subset of Approve_WithinTheApproversLimitRecordsTheDecisionAndUpdatesOnce (its Manager row asserts the same plus UTC kind, time range, UpdateCount and the full snapshot): no mutant fails this test without failing that one. Also uses the retired demo.approver name with the Manager role",
+      "verdict": "replace",
+      "suggestion": "Remove it and add the row { \"demo.director\", \"Director\", 50000.01m } to ApprovalsAtTheApproversLimit so the lower edge of FR-002 is also checked through the service with UpdateCount and the snapshot"
+    },
+    {
+      "test": "ApprovalServiceTests.Approve_RejectsInvoiceThatIsStillADraft",
+      "rule": "other",
+      "catches": "lifecycle: EnsurePending removed from Approve",
+      "weakness": "Type-only and dominated by the Draft row of Approve_ReportsWrongStateBeforeCheckingTheApprover (which also checks snapshot, UpdateCount and order). It misses Decide being moved before EnsurePending: the Manager at 100.00 passes Decide, then the state check throws the expected type",
+      "verdict": "replace",
+      "suggestion": "Remove it and add a row with an approver who would otherwise be allowed, { \"demo.manager\", \"Manager\", 50000.00m, InvoiceStatus.Draft }, to AttemptsOnInvoicesThatAreNotPending, so the plain wrong-state path also gets the snapshot and UpdateCount == 0 assertions"
+    },
+    {
+      "test": "ApprovalServiceTests.Approve_ThrowsWhenInvoiceDoesNotExist",
+      "rule": "other",
+      "catches": "lifecycle: the not-found check removed (NullReferenceException instead of KeyNotFoundException)",
+      "weakness": "Type-only and duplicated by Approve_ReportsNotFoundBeforeCheckingTheApprover, whose Admin approver also catches an authority check placed before Find",
+      "verdict": "delete",
+      "suggestion": "Remove it; keep the Admin variant, strengthened as described for that test"
+    },
+    {
+      "test": "ApprovalServiceTests.Approve_WithinTheApproversLimitRecordsTheDecisionAndUpdatesOnce",
+      "rule": "FR-001, FR-002",
+      "catches": "amount >= roleLimit or a >= 500000m threshold reached through the service; Update skipped or called twice; DecidedBy set to the role or another value; DecidedAt local or unset; any extra field written on approval (DecisionNote, a rounded Amount)",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalServiceTests.Approve_RefusedAttemptGivesTheReasonAndChangesNothing",
+      "rule": "FR-005",
+      "catches": "a field written before Decide (the fake hands out the live invoice); Update called on refusal (e.g. in a finally); a refusal that sets Rejected or DecisionNote; the Decide call removed or its exception swallowed; ApprovalRefusedException rebased on InvalidOperationException (would map to 409)",
+      "weakness": "Message checked with StartsWith/Contains only; acceptable because ApprovalPolicyTests asserts the exact contract text",
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalServiceTests.Approve_ReportsNotFoundBeforeCheckingTheApprover",
+      "rule": "FR-005",
+      "catches": "an authority check placed before Find (Admin would get ApprovalRefusedException instead of KeyNotFoundException)",
+      "weakness": "Type-only against an empty repository: the contract's 404 message is not checked, and a Find that ignores or loosely matches the id cannot show up because nothing else is stored",
+      "verdict": "strengthen",
+      "suggestion": "Seed InvoiceOf(100.00m, InvoiceStatus.PendingApproval) (INV-2001), approve INV-404 as Admin, and assert the message equals \"Invoice INV-404 was not found.\", the INV-2001 snapshot is unchanged and UpdateCount == 0"
+    },
+    {
+      "test": "ApprovalServiceTests.Approve_ReportsWrongStateBeforeCheckingTheApprover",
+      "rule": "FR-005",
+      "catches": "state check removed or moved after Decide (every row's approver is one Decide refuses, so the wrong exception type shows); a state check that forgets Draft or Rejected; a write or Update before the state check",
+      "weakness": "Exception message not asserted (contract: \"Invoice INV-2001 is Approved; only pending invoices can be decided.\"); minor",
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalServiceTests.Reject_RecordsReasonAndApprover",
+      "rule": "other",
+      "catches": "lifecycle: Reject not setting Rejected or DecisionNote",
+      "weakness": "The name promises the approver but DecidedBy is not asserted (only Reject_RecordsWhoRejectedAndWhen checks it)",
+      "verdict": "strengthen",
+      "suggestion": "Assert result.DecidedBy == \"demo.approver\", or rename it Reject_RecordsStatusAndReason"
+    },
+    {
+      "test": "ApprovalServiceTests.Reject_RequiresAReason",
+      "rule": "other",
+      "catches": "lifecycle: IsNullOrEmpty instead of IsNullOrWhiteSpace, or no reason validation",
+      "weakness": "Type-only, no snapshot or UpdateCount: a Reject that writes Status or DecisionNote before validating still throws ArgumentException and passes",
+      "verdict": "strengthen",
+      "suggestion": "Use InvoiceOf(100.00m, InvoiceStatus.PendingApproval), snapshot before, then assert ParamName == \"reason\", the snapshot is unchanged and UpdateCount == 0"
+    },
+    {
+      "test": "ApprovalServiceTests.Reject_RecordsWhoRejectedAndWhen",
+      "rule": "other",
+      "catches": "lifecycle: Reject not writing DecidedBy or DecidedAt, or writing local time",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalServiceTests.Reject_UpdatesTheRepositoryOnce",
+      "rule": "other",
+      "catches": "lifecycle: Update removed from Reject or called twice",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalServiceTests.Reject_RefusesInvoiceThatIsNotPending",
+      "rule": "other",
+      "catches": "lifecycle: EnsurePending removed from Reject; a write or Update before the state check",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    }
+  ],
+  "missing": [
+    {
+      "rule": "FR-001",
+      "case": "Manager refused at a sub-cent amount above the limit, 50000.001m, with AmountAboveRoleLimit. Every boundary literal has exactly two decimals, so decimal.Round(amount, 2) > roleLimit (with either midpoint rule) passes the whole suite; the API accepts any amount > 0, so a user can create this amount"
+    },
+    {
+      "rule": "FR-002",
+      "case": "Director refused at 500000.001m with TwoApproversRequired (the US1 refusal above 500,000.00), which catches the same rounding-to-cents mutant on the two-approver threshold"
+    },
+    {
+      "rule": "FR-005",
+      "case": "After a refused attempt the invoice can still be approved by someone allowed (spec Edge Cases): Manager refused at 50,000.01, then a Director approves through the same service and repository; assert Approved, DecidedBy demo.director, UpdateCount == 1"
+    },
+    {
+      "rule": "FR-005",
+      "case": "API maps ApprovalRefusedException to 403 { error, code } and not 409 or Forbid() 500 (trap table). The test project references only Domain, so ApiControllerBase.Handle is untested; only planned e2e T023 will cover AmountAboveRoleLimit, and nothing covers an Admin passing the RequireRole gate and receiving the Domain's RoleCannotApprove reason"
+    },
+    {
+      "rule": "FR-005",
+      "case": "A guard that InvoiceSnapshot.Of captures every public Invoice property (snapshot keys equal the names from typeof(Invoice).GetProperties()). The success theory only proves Status, DecidedBy and DecidedAt are captured; if the helper dropped Amount, CustomerName, CreatedAt or DecisionNote, every refusal snapshot assertion would pass without checking anything"
+    },
+    {
+      "rule": "FR-007",
+      "case": "Rejecting is not limited by amount: every Reject test uses 100m, so an amount guard added to Reject survives. Reject a pending 600,000.00 invoice and assert Rejected and UpdateCount == 1 (outside the US1 FR list; may be deferred)"
+    }
+  ]
+}

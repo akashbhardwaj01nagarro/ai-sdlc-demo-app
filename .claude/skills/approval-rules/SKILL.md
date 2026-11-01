@@ -23,7 +23,7 @@ Limits are inclusive and exact decimals. Identity is the session username, trimm
 - `ApprovalService.Approve(invoiceId, approver)`: find, ensure pending, decide, then write, then `Update` once. Nothing that can refuse may run after the first write.
 - Refusal order (first failure wins): not found (404), not pending (409), role cannot approve, two approvers required (step 1 only), amount above role limit, same approver twice, Director required.
 - `ApprovalRefusedException` derives from `Exception`, not `InvalidOperationException`, so it maps to 403 `{ error, code }` and never to 409.
-- Amounts in messages: `ToString("N2", CultureInfo.InvariantCulture)`.
+- Amounts in messages: invariant culture, thousands separators, at least two decimals and every further significant decimal (`50,000.001`, never `50,000.00` for an amount above the limit).
 
 ## Test helpers
 

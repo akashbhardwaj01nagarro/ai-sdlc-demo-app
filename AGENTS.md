@@ -107,8 +107,11 @@ An agent may propose a verdict; a human decides. A finding about FR-004 or FR-00
 
 ## Demo accounts (not real credentials)
 
-- `demo.approver` / `ChangeMe123!` (role Approver)
+- `demo.manager` / `ChangeMe123!` (role Manager)
+- `demo.director` / `ChangeMe123!` (role Director)
 - `demo.admin` / `ChangeMe123!` (role Admin)
+
+The former `demo.approver` (role Approver) is gone; the Approver role can no longer approve.
 
 ## Never
 
