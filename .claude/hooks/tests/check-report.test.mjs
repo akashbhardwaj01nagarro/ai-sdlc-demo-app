@@ -1,10 +1,16 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
+import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { validate } from '../check-report.mjs';
+import { lastHandback, planCheck, validate } from '../check-report.mjs';
 
 const hook = fileURLToPath(new URL('../check-report.mjs', import.meta.url));
+// Every hook run below writes its ReportCheck record here, never into the real AI log.
+const scratch = mkdtempSync(join(tmpdir(), 'check-report-'));
+const testLog = join(scratch, 'log.jsonl');
 
 const goodReview = {
   reviewer: 'review-rules',
@@ -30,7 +36,18 @@ function message(report) {
 }
 
 function runHook(schema, input) {
-  return spawnSync(process.execPath, [hook, schema], { input: JSON.stringify(input) });
+  const args = schema ? [hook, schema] : [hook];
+  return spawnSync(process.execPath, args, { input: JSON.stringify(input), env: { ...process.env, AI_LOG_FILE: testLog } });
+}
+
+function transcriptWithHandback(message) {
+  const file = join(scratch, `agent-${Math.abs(message.length)}.jsonl`);
+  const entries = [
+    { type: 'assistant', message: { content: [{ type: 'text', text: 'Working on it.' }] } },
+    { type: 'assistant', message: { content: [{ type: 'tool_use', name: 'SubagentHandback', input: { message } }] } },
+  ];
+  writeFileSync(file, entries.map((entry) => JSON.stringify(entry)).join('\n'));
+  return file;
 }
 
 test('accepts a well-formed review, including an empty one', () => {
@@ -79,6 +96,53 @@ test('the hook blocks a malformed report once and lets a retry through', () => {
 
   const good = runHook('review', { last_assistant_message: message(goodReview), stop_hook_active: false });
   assert.equal(good.stdout.toString(), '');
+});
+
+test('a malformed hand-back from a reviewing agent is denied with the reason', () => {
+  const denied = runHook(null, { hook_event_name: 'PreToolUse', tool_name: 'SubagentHandback', agent_type: 'test-critic', tool_input: { message: 'All tests look fine.' } });
+  assert.equal(denied.status, 0);
+  const output = JSON.parse(denied.stdout.toString());
+  assert.equal(output.hookSpecificOutput.permissionDecision, 'deny');
+  assert.match(output.hookSpecificOutput.permissionDecisionReason, /"tests": \[/);
+
+  const report = { tests: [{ test: 'A.B', rule: 'FR-001', catches: 'x', weakness: null, verdict: 'keep', suggestion: null }], missing: [] };
+  const accepted = runHook(null, { hook_event_name: 'PreToolUse', tool_name: 'SubagentHandback', agent_type: 'test-critic', tool_input: { message: message(report) } });
+  assert.equal(accepted.stdout.toString(), '');
+});
+
+test('hand-backs from agents without a report format, and other tools, are not checked', () => {
+  assert.equal(planCheck({ hook_event_name: 'PreToolUse', tool_name: 'SubagentHandback', agent_type: 'domain-implementer', tool_input: { message: 'done' } }), null);
+  assert.equal(planCheck({ hook_event_name: 'PreToolUse', tool_name: 'Bash', agent_type: 'test-critic', tool_input: { command: 'ls' } }), null);
+  assert.equal(runHook(null, { hook_event_name: 'PreToolUse', tool_name: 'SubagentHandback', agent_type: 'domain-implementer', tool_input: { message: 'done' } }).stdout.toString(), '');
+});
+
+test('the agent type picks the schema', () => {
+  for (const [agentType, schemaName] of [['pr-reviewer', 'review'], ['review-tests', 'review'], ['mutation-analyst', 'mutation'], ['log-auditor', 'audit']]) {
+    assert.equal(planCheck({ hook_event_name: 'PreToolUse', tool_name: 'SubagentHandback', agent_type: agentType, tool_input: { message: '' } }).schemaName, schemaName);
+  }
+});
+
+test('at SubagentStop an empty final message falls back to the hand-back in the transcript', () => {
+  const transcript = transcriptWithHandback(message(goodReview));
+  assert.equal(lastHandback(transcript), message(goodReview));
+  const plan = planCheck({ hook_event_name: 'SubagentStop', agent_type: 'review-rules', last_assistant_message: '', agent_transcript_path: transcript }, 'review');
+  assert.equal(plan.source, 'transcript');
+  assert.equal(runHook('review', { hook_event_name: 'SubagentStop', last_assistant_message: '', agent_transcript_path: transcript }).stdout.toString(), '');
+
+  const badTranscript = transcriptWithHandback('no report at all, sorry');
+  const blocked = runHook('review', { hook_event_name: 'SubagentStop', last_assistant_message: '', agent_transcript_path: badTranscript });
+  assert.equal(JSON.parse(blocked.stdout.toString()).decision, 'block');
+  assert.equal(lastHandback(join(scratch, 'missing.jsonl')), '');
+});
+
+test('every check is recorded in the AI log as a ReportCheck event', () => {
+  runHook(null, { hook_event_name: 'PreToolUse', tool_name: 'SubagentHandback', agent_type: 'log-auditor', session_id: 's-check', tool_input: { message: 'nothing' } });
+  assert.ok(existsSync(testLog));
+  const records = readFileSync(testLog, 'utf8').trim().split('\n').map((line) => JSON.parse(line));
+  const record = records.filter((entry) => entry.session_id === 's-check').at(-1);
+  assert.equal(record.event, 'ReportCheck');
+  assert.equal(record.agent_type, 'log-auditor');
+  assert.deepEqual([record.data.schema, record.data.source, record.data.result], ['audit', 'handback', 'rejected']);
 });
 
 test('unknown schema names and garbage input never block', () => {

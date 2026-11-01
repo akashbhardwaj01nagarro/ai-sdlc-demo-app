@@ -16,7 +16,7 @@ import { SCHEMA_VERSION } from '../../.claude/hooks/ai-log.mjs';
 import { sanitize, shouldOmitToolUse } from '../../.claude/hooks/lib/redact.mjs';
 
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
-const FULL_INPUT_TOOLS = new Set(['Agent', 'Task', 'Workflow', 'Skill', 'SendMessage']);
+const FULL_INPUT_TOOLS = new Set(['Agent', 'Task', 'Workflow', 'Skill', 'SendMessage', 'SubagentHandback']);
 
 export function textOf(content) {
   if (typeof content === 'string') return content;
@@ -79,7 +79,9 @@ export function recordsFromTranscript(lines, { agentType = null, hookStartBySess
         if (block.type === 'tool_use') toolNames.set(block.id, block.name);
         if (block.type === 'text' && block.text?.trim()) {
           add('AssistantText', { text: block.text }, index, { keepWhole: true });
-        } else if (block.type === 'tool_use' && !coveredByHooks) {
+        } else if (block.type === 'tool_use' && (!coveredByHooks || block.name === 'SubagentHandback')) {
+          // A subagent's hand-back is its final report; hooks may have logged it shortened,
+          // so it is always imported whole as well.
           add('PreToolUse', { tool_input: block.input ?? null }, index, {
             toolName: block.name,
             toolUseId: block.id,

@@ -67,6 +67,19 @@ test('renders prompts in full and each tool call on one line', () => {
   assert.equal(render(records), markdown);
 });
 
+test('a hand-back is imported whole even after the hooks start, and rendered once, untruncated', () => {
+  const longReport = `Report\n${'x'.repeat(9000)}\nEND`;
+  const handbackEntry = JSON.stringify({ type: 'assistant', uuid: 'h1', sessionId: session, agentId: 'agent-1', timestamp: '2026-01-01T12:30:00.000Z', message: { role: 'assistant', content: [{ type: 'tool_use', id: 'toolu_h', name: 'SubagentHandback', input: { message: longReport } }] } });
+  const hookStartBySession = new Map([[session, '2026-01-01T11:00:00.000Z']]);
+  const { records } = recordsFromTranscript([handbackEntry], { agentType: 'test-critic', hookStartBySession });
+  assert.equal(records.length, 1);
+  assert.equal(records[0].data.tool_input.message, longReport);
+  const shortened = { ...records[0], origin: 'interactive', truncated: true, ts: '2026-01-01T12:29:59.000Z', data: { tool_input: { message: 'Report…[cut]' } } };
+  const markdown = render([shortened, records[0]]);
+  assert.equal(markdown.split('handed back').length - 1, 1);
+  assert.ok(markdown.includes('END'));
+});
+
 test('describes tool inputs briefly', () => {
   assert.equal(describeToolInput('Bash', { command: 'dotnet  test\n--no-build' }), 'dotnet test --no-build');
   assert.equal(describeToolInput('Agent', { subagent_type: 'test-critic', description: 'Review US1 tests' }), 'test-critic: Review US1 tests');

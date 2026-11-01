@@ -12,7 +12,7 @@ export const SCHEMA_VERSION = 1;
 
 // Prompts, subagent briefs and final answers are the interaction itself: keep them whole.
 const FULL_TEXT_EVENTS = new Set(['UserPromptSubmit', 'Stop', 'SubagentStop']);
-const FULL_INPUT_TOOLS = new Set(['Agent', 'Task', 'Workflow', 'Skill', 'SendMessage']);
+const FULL_INPUT_TOOLS = new Set(['Agent', 'Task', 'Workflow', 'Skill', 'SendMessage', 'SubagentHandback']);
 
 function eventData(input) {
   switch (input.hook_event_name) {

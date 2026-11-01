@@ -111,6 +111,13 @@ export function render(records) {
         .map((record) => [record.tool_use_id, record]),
     );
     const shownCalls = new Set();
+    // A hand-back can be logged twice (shortened by the hook, whole by the exporter); show the whole one.
+    const handbacks = new Map();
+    for (const record of sessionRecords) {
+      if (record.event !== 'PreToolUse' || record.tool_name !== 'SubagentHandback' || !record.tool_use_id) continue;
+      const known = handbacks.get(record.tool_use_id);
+      if (!known || (known.truncated && !record.truncated)) handbacks.set(record.tool_use_id, record);
+    }
     for (const record of sessionRecords) {
       const who = speaker(record);
       switch (record.event) {
@@ -132,6 +139,11 @@ export function render(records) {
         case 'PreToolUse': {
           if (record.tool_use_id && shownCalls.has(record.tool_use_id)) break;
           shownCalls.add(record.tool_use_id);
+          if (record.tool_name === 'SubagentHandback') {
+            const handback = handbacks.get(record.tool_use_id) ?? record;
+            lines.push(`**${time(record.ts)} · ${who} handed back**`, '', fenced(handback.data?.tool_input?.message ?? ''), '');
+            break;
+          }
           const response = responses.get(record.tool_use_id);
           const output = response?.data?.tool_response ?? response?.data?.error;
           const failed = response?.event === 'PostToolUseFailure' || response?.data?.is_error;

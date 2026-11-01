@@ -1,11 +1,26 @@
-// SubagentStop hook (declared as a Stop hook in a subagent's frontmatter): makes the
-// reviewing subagents finish with one fenced ```json report in a fixed shape, so their
-// output can be merged, rendered and compared run to run. Usage:
-//   node check-report.mjs <review|test-critique|mutation|audit>
-// A malformed report blocks the stop once with instructions; when stop_hook_active is
-// set the subagent is already retrying, so it is let through to avoid a loop.
-import { readFileSync } from 'node:fs';
+// Makes the reviewing subagents hand back one fenced ```json report in a fixed shape, so
+// their output can be merged, rendered and compared run to run. It runs in two places:
+//   - PreToolUse on SubagentHandback (.claude/settings.json): the report a subagent hands
+//     back is checked before it leaves; a malformed one is denied with the reason, so the
+//     subagent fixes the format and hands back again. The schema follows from agent_type.
+//   - Stop in a subagent's frontmatter (runs as SubagentStop):
+//       node check-report.mjs <review|test-critique|mutation|audit>
+//     It checks the final message, or the last hand-back in the subagent's transcript, and
+//     blocks once; when stop_hook_active is set the subagent is already retrying.
+// Every check is recorded in the AI log as a "ReportCheck" event.
+import { appendFileSync, existsSync, readFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
+import { buildRecord, logFilePath } from './ai-log.mjs';
+
+export const AGENT_SCHEMAS = {
+  'pr-reviewer': 'review',
+  'review-rules': 'review',
+  'review-tests': 'review',
+  'review-security': 'review',
+  'test-critic': 'test-critique',
+  'mutation-analyst': 'mutation',
+  'log-auditor': 'audit',
+};
 
 const SEVERITIES = ['blocker', 'major', 'minor', 'nit'];
 const RULE_AREAS = ['FR-001', 'FR-002', 'FR-003', 'FR-004', 'FR-005', 'layering', 'tests', 'security', 'conventions', 'other'];
@@ -111,7 +126,7 @@ export const SCHEMAS = {
 
 export function extractReport(message) {
   const blocks = [...(message ?? '').matchAll(/```json[^\S\r\n]*\r?\n([\s\S]*?)\r?\n```/g)];
-  const candidate = blocks.length ? blocks[blocks.length - 1][1] : (message ?? '').trim();
+  const candidate = blocks.length ? blocks.at(-1)[1] : (message ?? '').trim();
   return JSON.parse(candidate);
 }
 
@@ -130,22 +145,75 @@ export function validate(schemaName, message) {
   return problems;
 }
 
+// The text a subagent last handed back, read from its own transcript: the message of its
+// final SubagentHandback call, or else its last plain text.
+export function lastHandback(transcriptPath) {
+  if (!transcriptPath || !existsSync(transcriptPath)) return '';
+  const entries = readFileSync(transcriptPath, 'utf8')
+    .split('\n')
+    .filter((line) => line.trim())
+    .flatMap((line) => {
+      try {
+        return [JSON.parse(line)];
+      } catch {
+        return [];
+      }
+    })
+    .filter((entry) => entry.type === 'assistant');
+  for (const entry of entries.reverse()) {
+    const blocks = Array.isArray(entry.message?.content) ? [...entry.message.content].reverse() : [];
+    for (const block of blocks) {
+      if (block.type === 'tool_use' && block.name === 'SubagentHandback' && typeof block.input?.message === 'string') return block.input.message;
+      if (block.type === 'text' && block.text?.trim()) return block.text;
+    }
+  }
+  return '';
+}
+
+// Works out what to check and how to answer for one hook call; null means nothing to do.
+export function planCheck(input, schemaArgument) {
+  if (input.hook_event_name === 'PreToolUse') {
+    if (input.tool_name !== 'SubagentHandback') return null;
+    const schemaName = AGENT_SCHEMAS[input.agent_type];
+    if (!schemaName) return null;
+    return { schemaName, text: input.tool_input?.message ?? '', source: 'handback' };
+  }
+  const schemaName = SCHEMAS[schemaArgument] ? schemaArgument : AGENT_SCHEMAS[input.agent_type];
+  if (!schemaName || input.stop_hook_active) return null;
+  if (input.last_assistant_message?.trim()) return { schemaName, text: input.last_assistant_message, source: 'final-message' };
+  return { schemaName, text: lastHandback(input.agent_transcript_path), source: 'transcript' };
+}
+
+export function decision(input, schemaName, problems) {
+  const reason =
+    `Your report is not in the required format (${problems.slice(0, 8).join('; ')}). ` +
+    `End it with exactly one fenced \`\`\`json block shaped like ${SCHEMAS[schemaName].shape}. ` +
+    'Keep the findings you already have; only fix the format.';
+  if (input.hook_event_name === 'PreToolUse') {
+    return { hookSpecificOutput: { hookEventName: 'PreToolUse', permissionDecision: 'deny', permissionDecisionReason: `check-report: ${reason}` } };
+  }
+  return { decision: 'block', reason };
+}
+
+function recordCheck(input, plan, problems) {
+  const record = buildRecord({ hook_event_name: 'ReportCheck', session_id: input.session_id, prompt_id: input.prompt_id, agent_id: input.agent_id, agent_type: input.agent_type, tool_name: input.tool_name, tool_use_id: input.tool_use_id });
+  record.data = { checked_on: input.hook_event_name, schema: plan.schemaName, source: plan.source, result: problems.length ? 'rejected' : 'accepted', problems: problems.slice(0, 8) };
+  appendFileSync(logFilePath(), `${JSON.stringify(record)}\n`, 'utf8');
+}
+
 function main() {
-  const schemaName = process.argv[2];
   const raw = readFileSync(0, 'utf8');
   const input = raw.trim() ? JSON.parse(raw) : {};
-  if (input.stop_hook_active || !SCHEMAS[schemaName]) return;
-  const problems = validate(schemaName, input.last_assistant_message);
+  const plan = planCheck(input, process.argv[2]);
+  if (!plan) return;
+  const problems = validate(plan.schemaName, plan.text);
+  try {
+    recordCheck(input, plan, problems);
+  } catch {
+    // logging must never decide the outcome
+  }
   if (problems.length === 0) return;
-  process.stdout.write(
-    JSON.stringify({
-      decision: 'block',
-      reason:
-        `Your report is not in the required format (${problems.slice(0, 8).join('; ')}). ` +
-        `End your answer with exactly one fenced \`\`\`json block shaped like ${SCHEMAS[schemaName].shape}. ` +
-        'Keep the findings you already have; only fix the format.',
-    }),
-  );
+  process.stdout.write(JSON.stringify(decision(input, plan.schemaName, problems)));
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
