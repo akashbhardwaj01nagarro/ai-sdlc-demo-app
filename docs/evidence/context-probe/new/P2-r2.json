@@ -1,0 +1,130 @@
+{
+  "duration_api_ms": 9495,
+  "stop_reason": "end_turn",
+  "session_id": "72191797-7db3-406d-829a-bf3f24f3ad7b",
+  "total_cost_usd": 0.00098219,
+  "usage": {
+    "input_tokens": 4,
+    "cache_creation_input_tokens": 1498,
+    "cache_read_input_tokens": 18119,
+    "output_tokens": 736,
+    "output_tokens_details": {
+      "thinking_tokens": 284
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 1498,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "global",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 296,
+        "cache_read_input_tokens": 9420,
+        "cache_creation_input_tokens": 777,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 777
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "modelUsage": {
+    "claude-haiku-5-5": {
+      "inputTokens": 1239,
+      "outputTokens": 755,
+      "cacheReadInputTokens": 18119,
+      "cacheCreationInputTokens": 1498,
+      "webSearchRequests": 0,
+      "costUSD": 0.00098219,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 284,
+      "canonicalModel": "claude-haiku-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "extra_usage_disabled",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "safety_stops": 0,
+  "is_error": false,
+  "num_turns": 2,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "**No.** Under FR-004 (AGENTS.md:25), the same user never counts as both approvers on one invoice. This covers repeat clicks and concurrent requests, and read, decide and write must happen as one step.\n\n**Who counts as \"the same person\"** is decided by the signed-in username, compared trimmed and case-insensitively. Identity comes from the session, not the request body (Layering and Never sections).\n\nThe repo's spec folder (`specs/001-approval-limits/`) isn't in this checkout, so I couldn't cross-check the spec text. My search also found no comparison code in the backend, so I haven't confirmed the implementation enforces this yet.",
+  "ttft_ms": 7189,
+  "type": "result",
+  "duration_ms": 12457,
+  "uuid": "a91422d0-077d-4aed-8d72-2bbcda2397c3",
+  "ttft_stream_ms": 6295,
+  "time_to_request_ms": 5586,
+  "time_to_request_phases_ms": {
+    "other": 5442,
+    "system_prompt": 55,
+    "resume_other": 0,
+    "process_user_input": 3,
+    "input_attachments": 10,
+    "input_hooks": 4,
+    "tool_pool_refresh": 1,
+    "init_message": 30,
+    "engine_pickup": 2,
+    "message_prep": 1,
+    "model_config_wait": 3,
+    "autocompact": 2,
+    "query_setup": 4,
+    "model_gates": 2,
+    "tool_schema_build": 11,
+    "message_normalization": 2,
+    "client_creation": 6,
+    "request_build": 8
+  },
+  "turn_start_resume_kind": "none",
+  "process_turn_index": 0,
+  "time_to_request_loop_lag_ms": 4761,
+  "time_to_request_cpu_ms": 4938,
+  "time_to_request_major_faults": 8782,
+  "input_attachments_detail": {
+    "slowest_producer": "queued_commands",
+    "slowest_producer_ms": 7,
+    "cpu_ms": 0,
+    "major_faults": 241
+  },
+  "first_content_frame_ms": 6296,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

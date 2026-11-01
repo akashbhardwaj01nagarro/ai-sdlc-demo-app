@@ -12,6 +12,11 @@ public abstract class ApiControllerBase : ControllerBase
         {
             return Ok(action());
         }
+        catch (ApprovalRefusedException ex)
+        {
+            // 403, not Forbid(): Forbid() needs an authentication scheme and would end in a 500.
+            return StatusCode(StatusCodes.Status403Forbidden, new { error = ex.Message, code = ex.Reason.ToString() });
+        }
         catch (KeyNotFoundException ex)
         {
             return NotFound(new { error = ex.Message });

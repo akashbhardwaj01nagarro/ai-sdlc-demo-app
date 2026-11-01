@@ -1,0 +1,130 @@
+{
+  "duration_api_ms": 12122,
+  "stop_reason": "end_turn",
+  "session_id": "c98c195b-2319-41ab-a80c-5116e311338b",
+  "total_cost_usd": 0.00247203,
+  "usage": {
+    "input_tokens": 6,
+    "cache_creation_input_tokens": 7676,
+    "cache_read_input_tokens": 25473,
+    "output_tokens": 1096,
+    "output_tokens_details": {
+      "thinking_tokens": 212
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 7676,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "global",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 426,
+        "cache_read_input_tokens": 12114,
+        "cache_creation_input_tokens": 1882,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 1882
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "modelUsage": {
+    "claude-haiku-5-5": {
+      "inputTokens": 1241,
+      "outputTokens": 1116,
+      "cacheReadInputTokens": 25473,
+      "cacheCreationInputTokens": 7676,
+      "webSearchRequests": 0,
+      "costUSD": 0.00247203,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 212,
+      "canonicalModel": "claude-haiku-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "extra_usage_disabled",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "safety_stops": 0,
+  "is_error": false,
+  "num_turns": 4,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "**No, the repo doesn't answer this.** The two-approval rule isn't implemented, and the same-person question is still open.\n\n- `docs/use-cases/UC-1-bulk-approval.md:17` says invoices over $1,000 need a second approver. Line 26 lists \"Can the same person be both approvers on a large invoice?\" as an open question.\n- `backend/src/InvoiceApp.Domain/ApprovalService.cs:31-41` has a single `Approve` that sets the invoice to Approved on one call. There is no approval count or second-approver check.\n\n\"Same person\" is not defined anywhere. The only identity in the code is the signed-in username, which `ApprovalsController` passes in as `approver` (`ApprovalsController.cs:23`). Comparing usernames is the likely basis, but nothing in the repo says so.",
+  "ttft_ms": 7364,
+  "type": "result",
+  "duration_ms": 15929,
+  "uuid": "b1c4db0e-b21e-4bc9-80fc-ac3423f12cc6",
+  "ttft_stream_ms": 7201,
+  "time_to_request_ms": 6492,
+  "time_to_request_phases_ms": {
+    "other": 6049,
+    "system_prompt": 208,
+    "resume_other": 0,
+    "process_user_input": 9,
+    "input_attachments": 36,
+    "input_hooks": 17,
+    "tool_pool_refresh": 5,
+    "init_message": 56,
+    "engine_pickup": 10,
+    "message_prep": 4,
+    "model_config_wait": 13,
+    "autocompact": 9,
+    "query_setup": 3,
+    "model_gates": 2,
+    "tool_schema_build": 32,
+    "message_normalization": 4,
+    "client_creation": 11,
+    "request_build": 24
+  },
+  "turn_start_resume_kind": "none",
+  "process_turn_index": 0,
+  "time_to_request_loop_lag_ms": 5208,
+  "time_to_request_cpu_ms": 6031,
+  "time_to_request_major_faults": 8694,
+  "input_attachments_detail": {
+    "slowest_producer": "queued_commands",
+    "slowest_producer_ms": 21,
+    "cpu_ms": 63,
+    "major_faults": 290
+  },
+  "first_content_frame_ms": 7203,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

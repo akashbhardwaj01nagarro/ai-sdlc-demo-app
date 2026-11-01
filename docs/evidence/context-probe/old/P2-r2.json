@@ -1,0 +1,130 @@
+{
+  "duration_api_ms": 15317,
+  "stop_reason": "end_turn",
+  "session_id": "e1a51f20-2984-453b-ae75-65208e5fbda3",
+  "total_cost_usd": 0.00258713,
+  "usage": {
+    "input_tokens": 6,
+    "cache_creation_input_tokens": 8317,
+    "cache_read_input_tokens": 19613,
+    "output_tokens": 1187,
+    "output_tokens_details": {
+      "thinking_tokens": 258
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 8317,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "global",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 462,
+        "cache_read_input_tokens": 7949,
+        "cache_creation_input_tokens": 4991,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 4991
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "modelUsage": {
+    "claude-haiku-5-5": {
+      "inputTokens": 1241,
+      "outputTokens": 1207,
+      "cacheReadInputTokens": 19613,
+      "cacheCreationInputTokens": 8317,
+      "webSearchRequests": 0,
+      "costUSD": 0.00258713,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 258,
+      "canonicalModel": "claude-haiku-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "extra_usage_disabled",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "safety_stops": 0,
+  "is_error": false,
+  "num_turns": 4,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "**No.** The repo has no two-approval rule. The only mention is the brief `docs/use-cases/UC-1-bulk-approval.md` (line 17): \"Invoices over $1,000 need a second approver.\" That is a proposed feature, not implemented.\n\n`ApprovalService.Approve` (`backend/src/InvoiceApp.Domain/ApprovalService.cs:31`) moves an invoice straight to `Approved` on one call and stores one `DecidedBy`. Nothing checks for a second approver or compares approvers.\n\n\"The same person\" is not defined anywhere. The controller passes the signed-in username as a plain string (`ApprovalsController.cs:23`), and the domain never compares it to anything.",
+  "ttft_ms": 5351,
+  "type": "result",
+  "duration_ms": 16158,
+  "uuid": "f0d79ba0-cea2-4e52-94e4-83fe25b240f7",
+  "ttft_stream_ms": 5343,
+  "time_to_request_ms": 169,
+  "time_to_request_phases_ms": {
+    "other": 18,
+    "system_prompt": 44,
+    "resume_other": 0,
+    "process_user_input": 3,
+    "input_attachments": 11,
+    "input_hooks": 5,
+    "tool_pool_refresh": 2,
+    "init_message": 21,
+    "engine_pickup": 1,
+    "message_prep": 0,
+    "model_config_wait": 2,
+    "autocompact": 2,
+    "query_setup": 0,
+    "model_gates": 1,
+    "tool_schema_build": 8,
+    "message_normalization": 1,
+    "client_creation": 45,
+    "request_build": 5
+  },
+  "turn_start_resume_kind": "none",
+  "process_turn_index": 0,
+  "time_to_request_loop_lag_ms": 119,
+  "time_to_request_cpu_ms": 313,
+  "time_to_request_major_faults": 7740,
+  "input_attachments_detail": {
+    "slowest_producer": "model",
+    "slowest_producer_ms": 7,
+    "cpu_ms": 16,
+    "major_faults": 370
+  },
+  "first_content_frame_ms": 5344,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

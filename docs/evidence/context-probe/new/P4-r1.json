@@ -1,0 +1,130 @@
+{
+  "duration_api_ms": 5696,
+  "stop_reason": "end_turn",
+  "session_id": "48434d44-0b6d-482d-9ff7-b3fa9ca3387c",
+  "total_cost_usd": 0.00099206,
+  "usage": {
+    "input_tokens": 4,
+    "cache_creation_input_tokens": 1627,
+    "cache_read_input_tokens": 18106,
+    "output_tokens": 704,
+    "output_tokens_details": {
+      "thinking_tokens": 382
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 1627,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "global",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 303,
+        "cache_read_input_tokens": 9415,
+        "cache_creation_input_tokens": 903,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 903
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "modelUsage": {
+    "claude-haiku-5-5": {
+      "inputTokens": 1231,
+      "outputTokens": 725,
+      "cacheReadInputTokens": 18106,
+      "cacheCreationInputTokens": 1627,
+      "webSearchRequests": 0,
+      "costUSD": 0.00099206,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 382,
+      "canonicalModel": "claude-haiku-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "extra_usage_disabled",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "safety_stops": 0,
+  "is_error": false,
+  "num_turns": 2,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "**Where:** In the Domain project (`backend/src/InvoiceApp.Domain`), not the controller. The rules go in `ApprovalPolicy`, a pure function of values that never receives or writes an `Invoice`. The limits go in `ApprovalLimits`. `ApprovalService` loads the invoice, asks the policy, and writes only after every rule passes.\n\n**Refusal response:** The controller maps a refused approval to HTTP 403 with a JSON body `{ error, code }`. The `error` text names the rule, role, limit and invoice.\n\n**Current state:** `ApprovalPolicy` and `ApprovalLimits` don't exist yet. `ApprovalService.cs` is the only approval class in Domain, and `ApprovalsController.cs` is the Api side.",
+  "ttft_ms": 8797,
+  "type": "result",
+  "duration_ms": 13576,
+  "uuid": "db16be1b-73f2-4edb-a252-4474353dfa16",
+  "ttft_stream_ms": 7289,
+  "time_to_request_ms": 6307,
+  "time_to_request_phases_ms": {
+    "other": 5857,
+    "system_prompt": 262,
+    "resume_other": 1,
+    "process_user_input": 7,
+    "input_attachments": 23,
+    "input_hooks": 13,
+    "tool_pool_refresh": 5,
+    "init_message": 78,
+    "engine_pickup": 11,
+    "message_prep": 3,
+    "model_config_wait": 5,
+    "autocompact": 13,
+    "query_setup": 1,
+    "model_gates": 0,
+    "tool_schema_build": 9,
+    "message_normalization": 3,
+    "client_creation": 7,
+    "request_build": 9
+  },
+  "turn_start_resume_kind": "none",
+  "process_turn_index": 0,
+  "time_to_request_loop_lag_ms": 4944,
+  "time_to_request_cpu_ms": 5874,
+  "time_to_request_major_faults": 7515,
+  "input_attachments_detail": {
+    "slowest_producer": "queued_commands",
+    "slowest_producer_ms": 12,
+    "cpu_ms": 47,
+    "major_faults": 83
+  },
+  "first_content_frame_ms": 7290,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

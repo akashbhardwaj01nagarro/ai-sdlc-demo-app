@@ -1,0 +1,130 @@
+{
+  "duration_api_ms": 9785,
+  "stop_reason": "end_turn",
+  "session_id": "11887871-5584-4000-8041-e7cfe315d53e",
+  "total_cost_usd": 0.0010634899999999998,
+  "usage": {
+    "input_tokens": 6,
+    "cache_creation_input_tokens": 1615,
+    "cache_read_input_tokens": 27739,
+    "output_tokens": 649,
+    "output_tokens_details": {
+      "thinking_tokens": 90
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 1615,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "global",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 387,
+        "cache_read_input_tokens": 9613,
+        "cache_creation_input_tokens": 706,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 706
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "modelUsage": {
+    "claude-haiku-5-5": {
+      "inputTokens": 1246,
+      "outputTokens": 677,
+      "cacheReadInputTokens": 27739,
+      "cacheCreationInputTokens": 1615,
+      "webSearchRequests": 0,
+      "costUSD": 0.0010634899999999998,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 90,
+      "canonicalModel": "claude-haiku-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "extra_usage_disabled",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "safety_stops": 0,
+  "is_error": false,
+  "num_turns": 3,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "It returns **0.13** (13%).\n\n- `QuantityDiscount(60)` gives 0.05, since 60 falls in the 10 to 49 band... no, the 50 to 99 band, which gives 0.10.\n\nCorrecting that: `QuantityDiscount` checks `>= 50` first, so 60 gives **0.10**. The total is 0.10 + 0.03 (loyalty, 3 × 0.01) + 0.05 (Nonprofit) = **0.18**.\n\nSo `CombinedDiscount(60, 3, \"Nonprofit\")` returns **0.18m** (18%).\n\nThe Nonprofit check is an exact, case-sensitive string comparison (`customerType == \"Nonprofit\"`), so `\"nonprofit\"` would not add the 0.05. Source: `backend\\src\\InvoiceApp.Domain\\DiscountCalculator.cs:19-29`.",
+  "ttft_ms": 6542,
+  "type": "result",
+  "duration_ms": 12473,
+  "uuid": "cdb1124c-5d7c-4cf4-84df-09ca8d251cfb",
+  "ttft_stream_ms": 6237,
+  "time_to_request_ms": 5555,
+  "time_to_request_phases_ms": {
+    "other": 5277,
+    "system_prompt": 112,
+    "resume_other": 1,
+    "process_user_input": 8,
+    "input_attachments": 26,
+    "input_hooks": 8,
+    "tool_pool_refresh": 4,
+    "init_message": 58,
+    "engine_pickup": 5,
+    "message_prep": 2,
+    "model_config_wait": 8,
+    "autocompact": 5,
+    "query_setup": 1,
+    "model_gates": 1,
+    "tool_schema_build": 14,
+    "message_normalization": 3,
+    "client_creation": 4,
+    "request_build": 18
+  },
+  "turn_start_resume_kind": "none",
+  "process_turn_index": 0,
+  "time_to_request_loop_lag_ms": 4383,
+  "time_to_request_cpu_ms": 5750,
+  "time_to_request_major_faults": 9340,
+  "input_attachments_detail": {
+    "slowest_producer": "model",
+    "slowest_producer_ms": 15,
+    "cpu_ms": 47,
+    "major_faults": 292
+  },
+  "first_content_frame_ms": 6237,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

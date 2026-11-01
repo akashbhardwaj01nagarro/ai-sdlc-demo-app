@@ -1,0 +1,130 @@
+{
+  "duration_api_ms": 10656,
+  "stop_reason": "end_turn",
+  "session_id": "64ded526-6d4f-4514-8723-fed32b2cef64",
+  "total_cost_usd": 0.00103503,
+  "usage": {
+    "input_tokens": 6,
+    "cache_creation_input_tokens": 1724,
+    "cache_read_input_tokens": 20713,
+    "output_tokens": 689,
+    "output_tokens_details": {
+      "thinking_tokens": 79
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 1724,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "global",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 316,
+        "cache_read_input_tokens": 7343,
+        "cache_creation_input_tokens": 706,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 706
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "modelUsage": {
+    "claude-haiku-5-5": {
+      "inputTokens": 1246,
+      "outputTokens": 717,
+      "cacheReadInputTokens": 20713,
+      "cacheCreationInputTokens": 1724,
+      "webSearchRequests": 0,
+      "costUSD": 0.00103503,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 128000,
+      "thinkingTokens": 79,
+      "canonicalModel": "claude-haiku-5-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "network_error",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "safety_stops": 0,
+  "is_error": false,
+  "num_turns": 3,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "It returns **0.18** (18%).\n\n- `QuantityDiscount(60)` gives 0.10, since 60 is at least 50 but below 100 (`DiscountCalculator.cs:9`).\n- `LoyaltyDiscount(3)` gives 0.03, which is 3 × 0.01 and under the 0.10 cap (`DiscountCalculator.cs:16`).\n- `customerType == \"Nonprofit\"` adds 0.05 (`DiscountCalculator.cs:23-25`).\n\nThe sum is 0.10 + 0.03 + 0.05 = 0.18. `CombinedDiscount` applies no cap of its own (`DiscountCalculator.cs:19-29`).",
+  "ttft_ms": 7330,
+  "type": "result",
+  "duration_ms": 13920,
+  "uuid": "c3484d0d-21a2-4cd6-8ba8-937ea3f8b0a0",
+  "ttft_stream_ms": 7311,
+  "time_to_request_ms": 831,
+  "time_to_request_phases_ms": {
+    "other": 113,
+    "system_prompt": 66,
+    "resume_other": 0,
+    "process_user_input": 20,
+    "input_attachments": 30,
+    "input_hooks": 57,
+    "tool_pool_refresh": 22,
+    "init_message": 383,
+    "engine_pickup": 3,
+    "message_prep": 7,
+    "model_config_wait": 8,
+    "autocompact": 12,
+    "query_setup": 2,
+    "model_gates": 3,
+    "tool_schema_build": 49,
+    "message_normalization": 6,
+    "client_creation": 21,
+    "request_build": 29
+  },
+  "turn_start_resume_kind": "none",
+  "process_turn_index": 0,
+  "time_to_request_loop_lag_ms": 781,
+  "time_to_request_cpu_ms": 766,
+  "time_to_request_major_faults": 6409,
+  "input_attachments_detail": {
+    "slowest_producer": "queued_commands",
+    "slowest_producer_ms": 7,
+    "cpu_ms": 47,
+    "major_faults": 235
+  },
+  "first_content_frame_ms": 7311,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

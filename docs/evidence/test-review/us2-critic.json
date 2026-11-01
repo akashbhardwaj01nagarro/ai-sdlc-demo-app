@@ -1,0 +1,282 @@
+{
+  "tests": [
+    {
+      "test": "ApprovalPolicyTests.Decide_ManagerApprovesTheSmallestAmount",
+      "rule": "FR-001",
+      "catches": "Manager missing from the role map; an inverted comparison that refuses amounts under the limit",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalPolicyTests.Decide_ManagerApprovesExactlyTheManagerLimit",
+      "rule": "FR-001",
+      "catches": "amount >= roleLimit (the < vs <= trap); a ManagerLimit below 50,000.00",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalPolicyTests.Decide_DirectorApprovesExactlyTheManagerLimit",
+      "rule": "FR-001",
+      "catches": "a tiered implementation that allows exactly one role per amount band and refuses a Director at 50,000.00; Director missing from the role map",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalPolicyTests.Decide_RefusesManagerOneCentAboveTheManagerLimit",
+      "rule": "FR-001",
+      "catches": "rounding or truncating to whole units before comparing; a ManagerLimit of 50,000.01 or more; wrong reason code or message",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalPolicyTests.Decide_RefusesManagerASubCentAboveTheManagerLimit",
+      "rule": "FR-001",
+      "catches": "decimal.Round(amount, 2) before comparing",
+      "weakness": "Strict subset of the Manager 50000.001m row of Decide_ShowsTheExactAmountWhenItHasMoreThanTwoDecimals (same inputs, prefix/suffix instead of the exact message); no unique kill. US2 only added the firstApprovedBy argument.",
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalPolicyTests.Decide_ShowsTheExactAmountWhenItHasMoreThanTwoDecimals",
+      "rule": "FR-005",
+      "catches": "N2 formatting that shows 50,000.001 as 50,000.00; printing the stored scale (50,000.0100). Dropping the TwoApproversRequired row is correct: no US2 message shows an amount above 500,000.00",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalPolicyTests.Decide_RefusesManagerAtTheDirectorLimit",
+      "rule": "FR-001",
+      "catches": "Manager given the Director limit; a two-approver threshold of amount >= 500000m (the Manager would get FirstApprovalRecorded instead of AmountAboveRoleLimit)",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalPolicyTests.Decide_DirectorApprovesOneCentAboveTheManagerLimit",
+      "rule": "FR-002",
+      "catches": "Director mapped to the Manager limit; one global 50,000.00 limit for every role",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalPolicyTests.Decide_DirectorApprovesExactlyTheDirectorLimit",
+      "rule": "FR-002",
+      "catches": "a two-approver threshold of amount >= 500000m (FirstApprovalRecorded instead of Approved); a DirectorLimit below 500,000.00; amount >= roleLimit",
+      "weakness": "This is FR-003's at-limit case but it carries only the FR-002 trait. No FR-003-tagged test uses 500,000.00, so dotnet test --filter Rule=FR-003 passes with the >= 500000m threshold, against the AGENTS.md rule that each rule run on its own has an at-limit test.",
+      "verdict": "strengthen",
+      "suggestion": "Add the trait Rule=FR-003 here, and to Decide_RefusesManagerAtTheDirectorLimit, which also fails under >= 500000m."
+    },
+    {
+      "test": "ApprovalPolicyTests.Decide_DirectorOneCentAboveTheDirectorLimitGivesOnlyTheFirstApproval",
+      "rule": "FR-003",
+      "catches": "one Director approving alone above 500,000.00 (the old single-approver path, or a two-approver branch for Managers only); a DirectorLimit of 500,000.01 or more; truncating to whole units before the threshold check",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalPolicyTests.Decide_DirectorASubCentAboveTheDirectorLimitGivesOnlyTheFirstApproval",
+      "rule": "FR-003",
+      "catches": "rounding to cents before the two-approver threshold: decimal.Round(500000.001m, 2) is 500000.00m, which lets one Director approve alone",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalPolicyTests.Decide_ManagerOneCentAboveTheDirectorLimitGivesTheFirstApproval",
+      "rule": "FR-003",
+      "catches": "the commented Q1 alternative (first approval from a Director only); the Manager's own limit checked before the two-approver branch (AmountAboveRoleLimit)",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalPolicyTests.Decide_ADifferentDirectorGivesTheSecondApproval",
+      "rule": "FR-003",
+      "catches": "a second approval that returns FirstApprovalRecorded again and never completes; identity by StartsWith or Contains in either direction (demo.director vs demo.director2, rows 2 and 3); a same-user check that always matches; an inverted Director check",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalPolicyTests.Decide_RefusesTheFirstApproverAsTheSecondApprover",
+      "rule": "FR-004",
+      "catches": "no same-user check; an ordinal or == comparison (DEMO.Director rows); no Trim (space rows); trimming only the approver (row 4) or only the recorded name (row 3); wrong reason or message",
+      "weakness": "No variant contains an uppercase I and no row changes the culture, so culture-sensitive case folding passes: ToLower(), ToUpper(), CurrentCultureIgnoreCase, string.Compare(a, b, true). Under tr-TR, DEMO.DIRECTOR lowercases to demo.dırector, so the same user counts as two.",
+      "verdict": "strengthen",
+      "suggestion": "Add a case run under tr-TR (restore the culture in finally): first approver demo.director, approver DEMO.DIRECTOR, expect SameApproverTwice and the exact message. Add a guard that DEMO.DIRECTOR.ToLower(CultureInfo.CurrentCulture) differs from demo.director, as the formatting tests do."
+    },
+    {
+      "test": "ApprovalPolicyTests.Decide_RefusesTheFirstApproverBeforeCheckingForADirector",
+      "rule": "FR-004",
+      "catches": "DirectorRequired checked before SameApproverTwice (the contract order swapped), which tells the first approver to come back as a Director",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalPolicyTests.Decide_RefusesAManagerAsTheSecondApprover",
+      "rule": "FR-003",
+      "catches": "the second approver's role not checked (a Manager completes the approval); the Manager's own limit applied instead (AmountAboveRoleLimit); a Director required only for the first approval; a message without the role or the threshold",
+      "weakness": "No unique kill: Decide_StatesTheTwoApproverThresholdIndependentOfTheCurrentCulture has the same inputs and assertions under en-IN. Kept because the minimum matrix lists this case.",
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalPolicyTests.Decide_RefusesARoleThatCannotApproveAsTheSecondApprover",
+      "rule": "FR-006",
+      "catches": "the two-approver branch placed before the role check (Admin gets DirectorRequired; the first approver signed in as Approver gets SameApproverTwice); an Admin-only deny-list on the second-approval path",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalPolicyTests.Decide_RefusesARoleThatCannotApprove",
+      "rule": "FR-006",
+      "catches": "default-allow or loose role matching (manager, a trailing space on Director, an empty role); Admin or the legacy Approver role given a limit",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalPolicyTests.Decide_RefusesTheRoleBeforeCheckingTheAmount",
+      "rule": "FR-006",
+      "catches": "the two-approver branch before the role check (Admin records a first approval at 600,000.00); the amount checked before the role at 60,000.00",
+      "weakness": "Only Admin tries a first approval. Suppose a US2 branch placed before LimitFor refuses only role == Admin. Then manager, Approver, a trailing-space Director or an empty role records a first approval, any Director can complete the invoice, and the whole suite still passes.",
+      "verdict": "strengthen",
+      "suggestion": "Make it a role x amount theory: Admin, Approver, manager, a trailing-space Director and an empty role, each at 500000.01m and 600000.00m with no first approval. Each case expects RoleCannotApprove and the exact message."
+    },
+    {
+      "test": "ApprovalPolicyTests.Decide_FormatsAmountsIndependentOfTheCurrentCulture",
+      "rule": "FR-005",
+      "catches": "amounts formatted with the current culture (en-IN 2,50,000.00, de-DE 250.000,00); sub-cent amounts rounded under de-DE",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalPolicyTests.Decide_StatesTheTwoApproverThresholdIndependentOfTheCurrentCulture",
+      "rule": "FR-005",
+      "catches": "the DirectorRequired message formatting the threshold with the current culture (5,00,000.00 under en-IN), for example an inline N2 instead of the invariant helper; wrong reason or role in the message",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalServiceTests.Approve_FirstApprovalAboveTheDirectorLimitKeepsTheInvoicePending",
+      "rule": "FR-003",
+      "catches": "one Director approving above 500,000.00 alone in the service (Status Approved); the first approval writing Status, DecidedBy or DecidedAt; FirstApprovedBy or FirstApprovedAt not recorded; time taken from DateTime.UtcNow, local time or .DateTime (exact ClockTime plus a Kind check); Update skipped or called twice; any other field touched (full snapshot)",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalServiceTests.Approve_ManagerGivesTheFirstApprovalAndADirectorCompletesIt",
+      "rule": "FR-003",
+      "catches": "a Manager refused as first approver in the service (the Q1 alternative), or treated as a final approver; the second approval re-stamping or replacing FirstApprovedBy or FirstApprovedAt; DecidedAt not taken from the TimeProvider; a wrong UpdateCount after either step",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalServiceTests.Approve_SecondApprovalByADifferentDirectorApprovesAndKeepsTheFirstApproval",
+      "rule": "FR-003",
+      "catches": "a same-user check that compares roles (two different Directors refused); the second approval recorded as another first approval (the invoice stays pending); DecidedBy set to the first approver; the first approval overwritten; a missing Update",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalServiceTests.Approve_RefusesTheSameDirectorTwice",
+      "rule": "FR-004",
+      "catches": "no same-user check (one Director approves alone); the check comparing DecidedBy (null while the invoice awaits its second approval, so it never refuses), or a role stored as FirstApprovedBy; the repeat re-recorded as a new first approval (FirstApprovedAt moves to LaterClockTime); Update on refusal",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalServiceTests.Approve_RefusedSecondApprovalKeepsTheFirstApprovalForADifferentDirector",
+      "rule": "FR-005",
+      "catches": "a DirectorRequired refusal that clears the first approval or replaces it (the Manager recorded as first approver, or FirstApprovedAt re-stamped); a refusal that uses up the first approval, so the next Director only records a first approval; Update on refusal; the second approver's role not checked",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalServiceTests.Approve_ConcurrentApprovalsNeverCountTheSameUserTwice",
+      "rule": "FR-004",
+      "catches": "no gate (demo.director ends up as both FirstApprovedBy and DecidedBy, B finishes while A is held, A's repeat succeeds, UpdateCount is 3); a gate per service instance (each thread builds its own service, as each request does); a gate per approver; a gate around only the decision or only the write",
+      "weakness": "Catching a missing gate depends on threads B and A' running within 300 ms each, so under extreme CPU starvation that mutant could survive. The test never fails correct code: it passed 25 isolated runs and 18 parallel full-suite runs. It also expects the clock to be read inside the gate after Decide, so a safe refactor that reads the clock before taking the lock fails with a misleading 'not serialised' message.",
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalServiceTests.Approve_RefusedAttemptGivesTheReasonAndChangesNothing",
+      "rule": "FR-005",
+      "catches": "a field written before the refusal (full snapshot); Update on refusal; a refusal derived from InvalidOperationException (409); a wrong code or message; a SameApproverTwice or DirectorRequired refusal that clears or re-stamps a seeded first approval",
+      "weakness": "US2 removed the only row that refused an attempt above 500,000.00 with no first approval (Director 500,000.01, TwoApproversRequired) and added no replacement. Suppose the service writes FirstApprovedBy (and FirstApprovedAt) before Decide when Amount is above 500,000.00 and no first approval exists. An Admin's refused click then leaves demo.admin as the first approver in the live store, a single Director completes the invoice, and the whole suite still passes.",
+      "verdict": "strengthen",
+      "suggestion": "Add rows {null, demo.admin, Admin, 600000.00m, RoleCannotApprove} and {null, demo.user, manager, 500000.01m, RoleCannotApprove} with exact messages. Add {demo.director, demo.admin, Admin, 600000.00m, RoleCannotApprove}, so every refusal code is checked against a seeded first approval. Optionally add DEMO.Director and ' demo.director ' rows against a seeded demo.director, so acceptance scenario US2-4 (invoice unchanged) runs end to end."
+    },
+    {
+      "test": "ApprovalServiceTests.Reject_KeepsTheFirstApprovalOfAnInvoiceAwaitingItsSecondApproval",
+      "rule": "FR-007",
+      "catches": "Reject clearing FirstApprovedBy or FirstApprovedAt; Reject limited by role or amount (Admin at 600,000.00); rejection time from DateTime.UtcNow instead of the TimeProvider (exact ClockTime plus a Kind check); a missing Update; any other field touched",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "ApprovalServiceTests.Reject_ConcurrentApprovalWaitsAndFindsTheInvoiceRejected",
+      "rule": "other",
+      "catches": "Reject outside the shared gate (the approval completes while the rejection is held, then the rejection overwrites it); a per-service gate; Approve's pending check outside the gate (the waiting approval overwrites Rejected with Approved)",
+      "weakness": "Only the reject-first order is tested. A Reject that runs Find and EnsurePending before taking the gate passes, because the invoice is still pending when it checks. In the opposite order that Reject overwrites a completed approval. The mirror test is listed under missing.",
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "InvoiceSnapshotTests.Of_CopiesTheValueOfEveryProperty",
+      "rule": "FR-005",
+      "catches": "a snapshot that drops or defaults FirstApprovedBy or FirstApprovedAt, or files one under another key. The populated invoice now sets both, so the non-default and distinct-value guards cover them; without this, every 'first approval kept' comparison could pass vacuously",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    },
+    {
+      "test": "InvoiceSnapshotTests.Of_ChangesWhenAnyOnePropertyChanges",
+      "rule": "FR-005",
+      "catches": "a snapshot that ignores a change to FirstApprovedBy or FirstApprovedAt (the new reflection rows, made valid by distinct values in both populated invoices)",
+      "weakness": null,
+      "verdict": "keep",
+      "suggestion": null
+    }
+  ],
+  "missing": [
+    {
+      "rule": "FR-005",
+      "case": "Service: a refused first approval above 500,000.00. Admin at 600000.00m and manager at 500000.01m, with no first approval, are refused RoleCannotApprove; the snapshot is unchanged (FirstApprovedBy and FirstApprovedAt stay null) and UpdateCount is 0. Catches recording the first approval before the policy refuses, after which one Director can complete the invoice alone."
+    },
+    {
+      "rule": "FR-006",
+      "case": "Policy: roles other than Admin (Approver, manager, a trailing-space Director, an empty role) attempting the first approval at 500000.01m are refused RoleCannotApprove. Catches an Admin-only deny-list in a two-approver branch placed before the role check."
+    },
+    {
+      "rule": "FR-004",
+      "case": "Identity independent of culture: under tr-TR, DEMO.DIRECTOR against a recorded demo.director is refused SameApproverTwice. Catches ToLower(), ToUpper(), CurrentCultureIgnoreCase or string.Compare(a, b, true); no current variant can, because none contains an uppercase I."
+    },
+    {
+      "rule": "FR-007",
+      "case": "Mirror race: a final approval of a pending invoice is held in its clock read inside the gate; a concurrent Reject waits and then fails with 'Invoice INV-2001 is Approved; only pending invoices can be decided.'. The invoice stays Approved by the Director and UpdateCount is 1. Catches a Reject that checks state outside the gate and overwrites a completed approval."
+    },
+    {
+      "rule": "FR-008",
+      "case": "No automated test shows 'Awaiting second approval (first: X)' or the firstApprovedBy and firstApprovedAt fields in the invoice JSON, although the Definition of done asks Playwright for UI-visible behaviour. Needed: demo.director gives the first approval on a newly created invoice above 500,000; the note is visible; a repeat click returns 403 with code SameApproverTwice and the alert text; demo.director2 completes the approval."
+    }
+  ]
+}

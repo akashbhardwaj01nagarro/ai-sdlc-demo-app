@@ -8,3 +8,7 @@ node_modules/
 .env
 test-results/
 playwright-report/
+StrykerOutput/
+.claude/settings.local.json
+.claude/redact.local.json
+__pycache__/
