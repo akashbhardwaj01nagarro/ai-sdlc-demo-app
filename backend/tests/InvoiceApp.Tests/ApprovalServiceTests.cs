@@ -126,12 +126,21 @@ public class ApprovalServiceTests
     }
 
     // FR-003: above 500,000.00 the first approval only records who approved and when; the invoice stays
-    // pending and no final decision is recorded.
-    [Fact]
-    [Trait("Rule", "FR-003")]
-    public void Approve_FirstApprovalAboveTheDirectorLimitKeepsTheInvoicePending()
+    // pending and no final decision is recorded. 500,000.001 is above the limit too: a service that rounds the
+    // amount to cents before deciding reads it as 500,000.00, and one Director approves it alone.
+    public static TheoryData<decimal> AmountsAboveTheDirectorLimit => new()
     {
-        var repository = new FakeInvoiceRepository(InvoiceOf(500000.01m, InvoiceStatus.PendingApproval));
+        500000.01m,
+        500000.001m,
+    };
+
+    [Theory]
+    [Trait("Rule", "FR-002")]
+    [Trait("Rule", "FR-003")]
+    [MemberData(nameof(AmountsAboveTheDirectorLimit))]
+    public void Approve_FirstApprovalAboveTheDirectorLimitKeepsTheInvoicePending(decimal amount)
+    {
+        var repository = new FakeInvoiceRepository(InvoiceOf(amount, InvoiceStatus.PendingApproval));
         var service = new ApprovalService(repository, new FakeTimeProvider(ClockTime));
         var before = InvoiceSnapshot.Of(repository.GetById(InvoiceId)!);
 
@@ -348,11 +357,18 @@ public class ApprovalServiceTests
     // 500,000.00 show a service that records the first approval before the policy refuses: the refused user
     // stays in FirstApprovedBy, and one Director could then complete the invoice alone. With one, every code
     // that can refuse a second approval is checked, the same user also in other letter case and with spaces.
+    // The 50,000.001 row shows a service that rounds the amount to cents before deciding: it reads 50,000.00,
+    // and the Manager's approval goes through.
     public static TheoryData<string?, string, string, decimal, ApprovalRefusal, string> RefusedAttempts => new()
     {
         {
             null, "demo.manager", "Manager", 50000.01m, ApprovalRefusal.AmountAboveRoleLimit,
             "Approval refused: invoice INV-2001 is 50,000.01, above the 50,000.00 limit for the Manager role. " +
+            "A Director must approve it."
+        },
+        {
+            null, "demo.manager", "Manager", 50000.001m, ApprovalRefusal.AmountAboveRoleLimit,
+            "Approval refused: invoice INV-2001 is 50,000.001, above the 50,000.00 limit for the Manager role. " +
             "A Director must approve it."
         },
         {
@@ -399,6 +415,7 @@ public class ApprovalServiceTests
 
     [Theory]
     [Trait("Rule", "FR-005")]
+    [Trait("Rule", "FR-001")]
     [Trait("Rule", "FR-003")]
     [Trait("Rule", "FR-004")]
     [MemberData(nameof(RefusedAttempts))]
@@ -429,8 +446,18 @@ public class ApprovalServiceTests
     {
         var repository = new FakeInvoiceRepository(InvoiceOf(50000.01m, InvoiceStatus.PendingApproval));
         var service = new ApprovalService(repository);
-        Assert.Throws<ApprovalRefusedException>(
+        var before = InvoiceSnapshot.Of(repository.GetById(InvoiceId)!);
+
+        var refusal = Assert.Throws<ApprovalRefusedException>(
             () => service.Approve(InvoiceId, new Approver("demo.manager", "Manager")));
+
+        Assert.Equal(ApprovalRefusal.AmountAboveRoleLimit, refusal.Reason);
+        Assert.Equal(
+            "Approval refused: invoice INV-2001 is 50,000.01, above the 50,000.00 limit for the Manager role. " +
+            "A Director must approve it.",
+            refusal.Message);
+        Assert.Equal(before, InvoiceSnapshot.Of(repository.GetById(InvoiceId)!));
+        Assert.Equal(0, repository.UpdateCount);
 
         var result = service.Approve(InvoiceId, new Approver("demo.director", "Director"));
 
