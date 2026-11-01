@@ -52,7 +52,8 @@ and a critic, plus the product owner's answers). This file records each decision
 
 - **Decision**: Identity is the session username compared with `Trim()` and
   `StringComparison.OrdinalIgnoreCase`. In US2 the read-decide-write sequence of Submit, Approve and
-  Reject runs under one static decision lock; time comes from an injected `TimeProvider`.
+  Reject runs inside one decision gate per repository instance (the production repository is a
+  singleton, so every request shares it; unit tests with separate fakes never block each other); time comes from an injected `TimeProvider`.
 - **Rationale**: Treating two spellings of one user as different would break dual control; treating
   two users as one only asks for another Director, the safe mistake. Without the lock, two concurrent
   requests can leave one user as both `FirstApprovedBy` and `DecidedBy`. `TimeProvider` gives a seam

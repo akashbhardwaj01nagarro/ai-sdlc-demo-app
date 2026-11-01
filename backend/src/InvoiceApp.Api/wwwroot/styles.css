@@ -25,6 +25,7 @@ th, td { text-align:left; padding:10px 8px; border-bottom:1px solid var(--line);
 .status-PendingApproval { color:#9a6a00; } .status-Approved { color:var(--accent); } .status-Rejected { color:var(--warn); }
 #pending-list { list-style:none; padding:0; margin:0; display:grid; gap:12px; }
 #pending-list li { display:grid; grid-template-columns:1fr auto; gap:8px 16px; align-items:center; padding:12px; border:1px solid var(--line); border-radius:8px; }
+.awaiting-second { display:block; margin-top:4px; color:var(--muted); font-size:13px; }
 .reject-row { grid-column:1 / -1; display:flex; gap:8px; }
 .reject-row input { flex:1; }
 [role="alert"] { color:var(--warn); margin:4px 0 0; }

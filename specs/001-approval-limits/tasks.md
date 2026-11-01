@@ -112,21 +112,21 @@ manually, the 640,000 scenario in quickstart.md behaves as described.
 
 ### Tests for User Story 2 (test-author, written first)
 
-- [ ] T025 [P] [US2] Extend `ApprovalPolicyTests`: Manager and Director give the first approval at 500,000.01 (`FirstApprovalRecorded`; Manager case tagged Clarification Q1); a different Director completes it; same user refused (`SameApproverTwice`) including `DEMO.Director` and ` demo.director `, and before the role rule; Manager and Admin refused as second approver (`DirectorRequired`, `RoleCannotApprove`); remove the `TwoApproversRequired` tests, in backend/tests/InvoiceApp.Tests/ApprovalPolicyTests.cs
-- [ ] T026 [P] [US2] Extend `ApprovalServiceTests`: first approval keeps the invoice pending and sets FirstApprovedBy/At with `UpdateCount == 1`; second Director approves and keeps both names; same Director twice refused with `UpdateCount` unchanged; a refusal does not consume or clear the first approval; Manager first then Director (Q1); Reject while awaiting the second approval keeps the first approval; refused-attempt theory gains same-user and Manager-second rows; a concurrency test with a blocking `TimeProvider` proves the decision lock, in backend/tests/InvoiceApp.Tests/ApprovalServiceTests.cs
+- [x] T025 [P] [US2] Extend `ApprovalPolicyTests`: Manager and Director give the first approval at 500,000.01 (`FirstApprovalRecorded`; Manager case tagged Clarification Q1); a different Director completes it; same user refused (`SameApproverTwice`) including `DEMO.Director` and ` demo.director `, and before the role rule; Manager and Admin refused as second approver (`DirectorRequired`, `RoleCannotApprove`); remove the `TwoApproversRequired` tests, in backend/tests/InvoiceApp.Tests/ApprovalPolicyTests.cs
+- [x] T026 [P] [US2] Extend `ApprovalServiceTests`: first approval keeps the invoice pending and sets FirstApprovedBy/At with `UpdateCount == 1`; second Director approves and keeps both names; same Director twice refused with `UpdateCount` unchanged; a refusal does not consume or clear the first approval; Manager first then Director (Q1); Reject while awaiting the second approval keeps the first approval; refused-attempt theory gains same-user and Manager-second rows; a concurrency test with a blocking `TimeProvider` proves the decision lock, in backend/tests/InvoiceApp.Tests/ApprovalServiceTests.cs
 
 ### Implementation for User Story 2 (domain-implementer)
 
-- [ ] T027 [P] [US2] Add `FirstApprovedBy` (string?) and `FirstApprovedAt` (DateTime?) in backend/src/InvoiceApp.Domain/Invoice.cs
-- [ ] T028 [US2] Add `FirstApprovalRecorded`, `SameApproverTwice`, `DirectorRequired`; remove `TwoApproversRequired`; add the two-approver branch to `ApprovalPolicy.Decide(invoiceId, amount, firstApprovedBy, approver)` with the commented Q1 line, in backend/src/InvoiceApp.Domain/ApprovalOutcome.cs, ApprovalRefusal.cs and ApprovalPolicy.cs
-- [ ] T029 [US2] Record the first approval or the final decision after `Decide`; run Submit, Approve and Reject under one static decision lock; take time from an injected `TimeProvider` (default `TimeProvider.System`), in backend/src/InvoiceApp.Domain/ApprovalService.cs
-- [ ] T030 [P] [US2] Register `TimeProvider.System` in backend/src/InvoiceApp.Api/Program.cs
-- [ ] T031 [P] [US2] Show "Awaiting second approval (first: X)" as a text node for invoices with `firstApprovedBy`, keeping the Approve button and its label, in backend/src/InvoiceApp.Api/wwwroot/app.js
-- [ ] T032 [P] [US2] Add demo.director2 (Director) and a 640,000 pending seed invoice in backend/src/InvoiceApp.Api/appsettings.json and InMemoryInvoiceRepository.cs; update README.md and AGENTS.md demo accounts
+- [x] T027 [P] [US2] Add `FirstApprovedBy` (string?) and `FirstApprovedAt` (DateTime?) in backend/src/InvoiceApp.Domain/Invoice.cs
+- [x] T028 [US2] Add `FirstApprovalRecorded`, `SameApproverTwice`, `DirectorRequired`; remove `TwoApproversRequired`; add the two-approver branch to `ApprovalPolicy.Decide(invoiceId, amount, firstApprovedBy, approver)` with the commented Q1 line, in backend/src/InvoiceApp.Domain/ApprovalOutcome.cs, ApprovalRefusal.cs and ApprovalPolicy.cs
+- [x] T029 [US2] Record the first approval or the final decision after `Decide`; run Submit, Approve and Reject inside one decision gate per repository instance; take time from an injected `TimeProvider` (default `TimeProvider.System`), in backend/src/InvoiceApp.Domain/ApprovalService.cs
+- [x] T030 [P] [US2] Register `TimeProvider.System` in backend/src/InvoiceApp.Api/Program.cs
+- [x] T031 [P] [US2] Show "Awaiting second approval (first: X)" as a text node for invoices with `firstApprovedBy`, keeping the Approve button and its label, in backend/src/InvoiceApp.Api/wwwroot/app.js
+- [x] T032 [P] [US2] Add demo.director2 (Director) and a 640,000 pending seed invoice in backend/src/InvoiceApp.Api/appsettings.json and InMemoryInvoiceRepository.cs; update README.md and AGENTS.md demo accounts
 
 ### Review for User Story 2
 
-- [ ] T033 [US2] test-critic reviews every US2 test; fix each confirmed weakness; record the review in docs/evidence/test-review/us2.md and us2-critic.json
+- [x] T033 [US2] test-critic and review-rules review the US2 change in parallel; fix each confirmed weakness (including a Playwright test of the two-approver flow in e2e/tests/two-approvers.spec.ts); record the review in docs/evidence/test-review/us2.md and us2-critic.json
 
 **Checkpoint**: US2 complete, committed as `feat(approvals): require two distinct approvers above 500,000`.
 

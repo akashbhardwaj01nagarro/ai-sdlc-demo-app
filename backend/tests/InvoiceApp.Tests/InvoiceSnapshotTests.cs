@@ -14,8 +14,9 @@ public class InvoiceSnapshotTests
         typeof(Invoice).GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
     // Two invoices that differ in every property, with no property at its default value. When Invoice
-    // gains a property (for example FirstApprovedBy in User Story 2), set it in both; the guards below
-    // fail until you do.
+    // gains a property, set it in both; the guards below fail until you do. The first approval
+    // (FirstApprovedBy, FirstApprovedAt; User Story 2) is set too, so a refusal that clears or replaces
+    // it shows up in every snapshot comparison.
     private static Invoice PopulatedInvoice() => new()
     {
         Id = "INV-3001",
@@ -23,6 +24,8 @@ public class InvoiceSnapshotTests
         Amount = 12345.67m,
         Status = InvoiceStatus.Rejected,
         CreatedAt = new DateTime(2026, 9, 1, 8, 0, 0, DateTimeKind.Utc),
+        FirstApprovedBy = "demo.manager",
+        FirstApprovedAt = new DateTime(2026, 9, 2, 9, 0, 0, DateTimeKind.Utc),
         DecidedBy = "demo.director",
         DecidedAt = new DateTime(2026, 9, 2, 10, 15, 0, DateTimeKind.Utc),
         DecisionNote = "Duplicate invoice",
@@ -35,6 +38,8 @@ public class InvoiceSnapshotTests
         Amount = 765.43m,
         Status = InvoiceStatus.Approved,
         CreatedAt = new DateTime(2026, 8, 3, 7, 30, 0, DateTimeKind.Utc),
+        FirstApprovedBy = "demo.director2",
+        FirstApprovedAt = new DateTime(2026, 8, 4, 9, 30, 0, DateTimeKind.Utc),
         DecidedBy = "demo.manager",
         DecidedAt = new DateTime(2026, 8, 4, 12, 45, 0, DateTimeKind.Utc),
         DecisionNote = "Wrong customer",

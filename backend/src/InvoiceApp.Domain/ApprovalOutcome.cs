@@ -4,5 +4,8 @@ namespace InvoiceApp.Domain;
 public enum ApprovalOutcome
 {
     /// <summary>The final decision: the invoice becomes Approved.</summary>
-    Approved
+    Approved,
+
+    /// <summary>The first of two approvals above 500,000.00 (FR-003): recorded, and the invoice stays pending.</summary>
+    FirstApprovalRecorded
 }

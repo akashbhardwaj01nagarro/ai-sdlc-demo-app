@@ -9,6 +9,9 @@ public enum ApprovalRefusal
     /// <summary>The amount is above the approver's own limit (FR-001).</summary>
     AmountAboveRoleLimit,
 
-    /// <summary>The amount is above 500,000.00, which needs two approvers; not supported yet.</summary>
-    TwoApproversRequired
+    /// <summary>The approver gave the first approval and cannot give the second one too (FR-004).</summary>
+    SameApproverTwice,
+
+    /// <summary>The second approval of an invoice above 500,000.00 must come from a Director (FR-003).</summary>
+    DirectorRequired
 }

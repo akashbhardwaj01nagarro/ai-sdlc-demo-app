@@ -14,11 +14,12 @@ Open http://localhost:5000 and sign in:
 | --- | --- | --- |
 | `demo.manager` | `ChangeMe123!` | Manager |
 | `demo.director` | `ChangeMe123!` | Director |
+| `demo.director2` | `ChangeMe123!` | Director |
 | `demo.admin` | `ChangeMe123!` | Admin |
 
 These are demo accounts for a local, in-memory app. They are not real credentials.
 
-A Manager approves invoices up to 50,000.00 and a Director up to 500,000.00; invoices above 500,000.00 are refused until two-approver support exists. Admin cannot approve but can reject and delete. The former `demo.approver` account (role Approver) is gone.
+A Manager approves invoices up to 50,000.00 and a Director up to 500,000.00. An invoice above 500,000.00 needs two different approvers: a Manager or a Director gives the first approval and a different Director the second. Admin cannot approve but can reject and delete. The former `demo.approver` account (role Approver) is gone.
 
 ## What it does
 
